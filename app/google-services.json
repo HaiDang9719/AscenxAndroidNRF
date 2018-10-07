@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "886926704959",
+    "firebase_url": "https://ascenxnrf.firebaseio.com",
+    "project_id": "ascenxnrf",
+    "storage_bucket": "ascenxnrf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886926704959:android:be6d06f49f8c0dc6",
+        "android_client_info": {
+          "package_name": "com.example.odc.ascenxnrf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886926704959-8jiog8vn3hevfe8u0sg6g210glv6j85q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnMGx0bC7G_8vafLRJPXUDTGshaUYe2ic"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
