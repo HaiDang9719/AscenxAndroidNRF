@@ -46,6 +46,8 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import no.nordicsemi.android.meshprovisioner.utils.MeshParserUtils;
+
+import com.example.odc.ascenxnrf.database.connectService;
 import com.example.odc.ascenxnrf.di.Injectable;
 import com.example.odc.ascenxnrf.dialog.DialogFragmentFlags;
 import com.example.odc.ascenxnrf.dialog.DialogFragmentGlobalNetworkName;
@@ -215,6 +217,7 @@ public class SettingsFragment extends Fragment implements Injectable,
                 ivIndexView.setText(getString(R.string.hex_format, String.format(Locale.US, "%08X", provisioningData.getIvIndex())));
                 unicastAddressView.setText(getString(R.string.hex_format, String.format(Locale.US, "%04X", provisioningData.getUnicastAddress())));
                 manageAppKeysView.setText(getString(R.string.app_key_count, provisioningData.getAppKeys().size()));
+
             }
         });
         mViewModel.getConfigurationSrcLiveData().observe(this, configuratorSrc -> {

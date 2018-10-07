@@ -64,6 +64,7 @@ import com.example.odc.ascenxnrf.R;
 import com.example.odc.ascenxnrf.adapter.ExtendedBluetoothDevice;
 import com.example.odc.ascenxnrf.ble.BleMeshManager;
 import com.example.odc.ascenxnrf.ble.BleMeshManagerCallbacks;
+import com.example.odc.ascenxnrf.database.connectService;
 import com.example.odc.ascenxnrf.livedata.ConfigModelPublicationStatusLiveData;
 import com.example.odc.ascenxnrf.utils.Utils;
 import com.example.odc.ascenxnrf.viewmodels.MeshNodeStates;
@@ -141,6 +142,10 @@ public class MeshService extends Service implements BleMeshManagerCallbacks,
      * app key
      **/
     private String mAppKey;
+    /**
+     * connect service
+     **/
+    connectService conn = new connectService();
     /**
      * flag to avoid adding app key when requesting composition data only as the initial provisioning steps of the app will continue adding app key after a composition data get
      **/
@@ -998,6 +1003,10 @@ public class MeshService extends Service implements BleMeshManagerCallbacks,
             final int unicastAddress = mProvisioningSettings.getUnicastAddress();
             final int globalTtl = mProvisioningSettings.getGlobalTtl();
             final BluetoothDevice device = mBluetoothDevice;
+            conn.createAndSendNetworkInforObj(networkKey,
+                    Integer.toString(keyIndex), Integer.toString(flags),
+                            Integer.toString(ivIndex), Integer.toString(unicastAddress),
+                                    Integer.toString(globalTtl));
             mMeshManagerApi.startProvisioning((UnprovisionedMeshNode) mMeshNode);
         }
 

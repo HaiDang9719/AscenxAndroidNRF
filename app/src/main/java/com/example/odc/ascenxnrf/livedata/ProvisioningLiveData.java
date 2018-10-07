@@ -25,17 +25,7 @@ package com.example.odc.ascenxnrf.livedata;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.util.Log;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import no.nordicsemi.android.meshprovisioner.ProvisioningSettings;
 
@@ -47,7 +37,6 @@ public class ProvisioningLiveData extends LiveData<ProvisioningLiveData>  {
     private String selectedAppKey;
     private String NETWORK_NAME_PREFS = "NETWORK_NAME_PREFS";
     private String NETWORK_NAME = "NETWORK_NAME";
-    Map<String, Object> networkInfo = new HashMap<>();
 
     public ProvisioningLiveData(){
         postValue(this);
@@ -78,12 +67,11 @@ public class ProvisioningLiveData extends LiveData<ProvisioningLiveData>  {
     }
 
     public String getNodeName() {
-        networkInfo.put("nodeName", nodeName);
         return nodeName;
     }
 
     public String getNetworkName() {
-        networkInfo.put("networkName", networkName);
+
         return networkName;
     }
 
@@ -94,7 +82,7 @@ public class ProvisioningLiveData extends LiveData<ProvisioningLiveData>  {
     }
 
     public String getNetworkKey() {
-        networkInfo.put("networkKey", mProvisioningSettings.getNetworkKey());
+
         return mProvisioningSettings.getNetworkKey();
     }
 
@@ -104,12 +92,12 @@ public class ProvisioningLiveData extends LiveData<ProvisioningLiveData>  {
     }
 
     public List<String> getAppKeys() {
-        networkInfo.put("appKey", mProvisioningSettings.getAppKeys());
+
         return mProvisioningSettings.getAppKeys();
     }
 
     public int getKeyIndex() {
-        networkInfo.put("keyIndex", mProvisioningSettings.getKeyIndex());
+
         return mProvisioningSettings.getKeyIndex();
     }
 
@@ -128,23 +116,7 @@ public class ProvisioningLiveData extends LiveData<ProvisioningLiveData>  {
     }
 
     public int getUnicastAddress() {
-        networkInfo.put("unicaseAdd", mProvisioningSettings.getUnicastAddress());
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Add a new document with a generated ID
-        db.collection("test")
-                .add(networkInfo)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("test", "Error adding document", e);
-                    }
-                });
+
         return mProvisioningSettings.getUnicastAddress();
     }
 

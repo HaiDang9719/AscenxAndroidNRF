@@ -25,8 +25,10 @@ package com.example.odc.ascenxnrf;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -55,6 +57,7 @@ import no.nordicsemi.android.meshprovisioner.utils.AddressUtils;
 import no.nordicsemi.android.meshprovisioner.utils.Element;
 import com.example.odc.ascenxnrf.adapter.AddedAppKeyAdapter;
 import com.example.odc.ascenxnrf.adapter.ElementAdapter;
+import com.example.odc.ascenxnrf.database.connectService;
 import com.example.odc.ascenxnrf.di.Injectable;
 import com.example.odc.ascenxnrf.dialog.DialogFragmentAppKeyAddStatus;
 import com.example.odc.ascenxnrf.dialog.DialogFragmentResetNode;
@@ -102,6 +105,7 @@ public class NodeConfigurationActivity extends AppCompatActivity implements Inje
     private AddedAppKeyAdapter mAdapter;
     private Handler mHandler;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,7 +128,6 @@ public class NodeConfigurationActivity extends AppCompatActivity implements Inje
                 enableClickableViews();
             }
         }
-
         mHandler = new Handler();
         // Set up views
         final Toolbar toolbar = findViewById(R.id.toolbar);
@@ -205,6 +208,11 @@ public class NodeConfigurationActivity extends AppCompatActivity implements Inje
                 DialogFragmentTransactionStatus fragmentMessage = DialogFragmentTransactionStatus.newInstance("Transaction Failed", getString(R.string.operation_timed_out));
                 fragmentMessage.show(getSupportFragmentManager(), null);
             }
+            connectService conn = new connectService();
+            conn.createAndSendNodeConfigureObj(node.isConfigured(), node.getNodeName(), node.getIdentityKey(), node.getDeviceKey(),
+                    node.getTimeStamp(), node.getNumberOfElements(), node.getElements(), node.getProductIdentifier(), node.getCompanyIdentifier(),
+                    node.getVersionIdentifier(), node.isRelayFeatureSupported(), node.isProxyFeatureSupported(),
+                    node.isFriendFeatureSupported(), node.isLowPowerFeatureSupported(), node.getNodeIdentifier());
         });
 
         mViewModel.getAppKeyAddStatus().observe(this, appKeyStatusLiveData -> {
