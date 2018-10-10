@@ -1,5 +1,6 @@
 package com.example.odc.ascenxnrf.database;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -15,13 +16,20 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.nio.charset.Charset;
 
+import javax.inject.Inject;
+
+import no.nordicsemi.android.meshprovisioner.MeshManagerApi;
 import no.nordicsemi.android.meshprovisioner.configuration.ProvisionedMeshNode;
 import no.nordicsemi.android.meshprovisioner.states.UnprovisionedMeshNode;
 
+
+
 public class retrieveService {
+    @Inject
+    MeshManagerApi mMeshManagerApi;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public void retrieveData(Object networkInformation){
+    public void retrieveData(){
         db.collection("test")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -31,22 +39,31 @@ public class retrieveService {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData().get("networkKey"));
-                                if(document.getData().get("nodeIdentifier") == null){
-                                    continue;
-                                }
-                                byte[] networkey = new byte[0];
-                                if(document.getData().get("networkKey") == "6A6F9A40EDD0E7A3E4A498752152498A")
-                                {
-                                    networkey = ("6A6F9A40EDD0E7A3E4A498752152498A").getBytes(Charset.forName("UTF-8"));
-                                }
+                                Log.d(TAG, document.getId() + " => " + document.getData().get("NodeIdentifier"));
+                                if(document.getData().get("NodeIdentifier") != null) {
 
-                                if(document.getData().get("nodeIdentifier").toString() == "CEDB2EBF6B8F4DA6"){
-                                    UnprovisionedMeshNode node = new UnprovisionedMeshNode();
-                                    node.setIsProvisioned((Boolean)document.getData().get("isProvisioned"));
-                                    node.setConfigured((Boolean)document.getData().get("isConfigured"));
-                                    node.setNetworkKey(networkey);
 
+//                                byte[] networkey = new byte[0];
+//                                if(document.getData().get("networkKey") == "6A6F9A40EDD0E7A3E4A498752152498A")
+//                                {
+//                                    networkey = ("6A6F9A40EDD0E7A3E4A498752152498A").getBytes(Charset.forName("UTF-8"));
+//                                }
+                                    if (document.getData().get("NodeIdentifier").toString().equals("CEDB2EBF6B8F4DA6")) {
+                                        UnprovisionedMeshNode unprovisionedMeshNode = null;
+                                        unprovisionedMeshNode = new UnprovisionedMeshNode();
+                                        unprovisionedMeshNode.setBluetoothDeviceAddress("67572279670323904790D1D636A25461");
+                                        unprovisionedMeshNode.setNetworkKey(("6A6F9A40EDD0E7A3E4A498752152498A").getBytes(Charset.forName("UTF-8")));
+                                        unprovisionedMeshNode.setKeyIndex(("0").getBytes(Charset.forName("UTF-8")));
+                                        unprovisionedMeshNode.setFlags(("0").getBytes(Charset.forName("UTF-8")));
+                                        unprovisionedMeshNode.setIvIndex(("0").getBytes(Charset.forName("UTF-8")));
+                                        unprovisionedMeshNode.setUnicastAddress(("43").getBytes(Charset.forName("UTF-8")));
+                                        unprovisionedMeshNode.setTtl(5);
+                                        unprovisionedMeshNode.setConfigurationSrc(("0").getBytes(Charset.forName("UTF-8")));
+                                        ProvisionedMeshNode node = new ProvisionedMeshNode(unprovisionedMeshNode);
+                                        //mMeshManagerApi.onNodeProvisioned(node);
+
+
+                                    }
                                 }
                             }
                         } else {

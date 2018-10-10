@@ -163,7 +163,8 @@ public final class UnprovisionedMeshNode extends BaseMeshNode {
         this.networkKey = networkKey;
     }
 
-    protected final void setDeviceKey(final byte[] deviceKey) {
+    // new update - HD change from protected to public
+    public final void setDeviceKey(final byte[] deviceKey) {
         this.deviceKey = deviceKey;
     }
 

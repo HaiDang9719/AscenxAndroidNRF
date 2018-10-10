@@ -114,7 +114,8 @@ public abstract class BaseMeshNode implements Parcelable {
         return nodeName;
     }
 
-    protected final void setNodeName(final String nodeName) {
+    // new update - HD change from protected to public
+    public final void setNodeName(final String nodeName) {
         if (!TextUtils.isEmpty(nodeName))
             this.nodeName = nodeName;
     }
