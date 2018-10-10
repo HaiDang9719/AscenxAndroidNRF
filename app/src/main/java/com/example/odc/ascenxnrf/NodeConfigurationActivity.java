@@ -212,7 +212,7 @@ public class NodeConfigurationActivity extends AppCompatActivity implements Inje
             conn.createAndSendNodeConfigureObj(node.isConfigured(), node.getNodeName(), node.getIdentityKey(), node.getDeviceKey(),
                     node.getTimeStamp(), node.getNumberOfElements(), node.getElements(), node.getProductIdentifier(), node.getCompanyIdentifier(),
                     node.getVersionIdentifier(), node.isRelayFeatureSupported(), node.isProxyFeatureSupported(),
-                    node.isFriendFeatureSupported(), node.isLowPowerFeatureSupported(), node.getNodeIdentifier());
+                    node.isFriendFeatureSupported(), node.isLowPowerFeatureSupported(), node.getNodeIdentifier(), node.isProvisioned());
         });
 
         mViewModel.getAppKeyAddStatus().observe(this, appKeyStatusLiveData -> {

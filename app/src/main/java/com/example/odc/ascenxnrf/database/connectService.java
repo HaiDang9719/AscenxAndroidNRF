@@ -107,10 +107,11 @@ public class connectService {
             byte[] deviceKey, long timeStampInMillis, int numberOfElements,
             Map<Integer, Element> element, int productID, int companyID, int versonID,
             Boolean isRelayFeatureSupported, Boolean isProxyFeatureSupported, Boolean isFriendFeatureSupported,
-            Boolean isLowPowerFeatureSupported, String NodeIdentifier
+            Boolean isLowPowerFeatureSupported, String NodeIdentifier, Boolean isProvisioned
     ){
         nodeConfiguration = new HashMap<>();
         nodeConfiguration.put("isConfigured", isConfigured);
+        nodeConfiguration.put("isProvisoned", isProvisioned);
         nodeConfiguration.put("nodeName", nodeName);
         nodeConfiguration.put("identityKey", Hex.bytesToStringUppercase(identityKey));
         nodeConfiguration.put("deviceKey", Hex.bytesToStringUppercase(deviceKey));
