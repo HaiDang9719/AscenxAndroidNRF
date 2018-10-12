@@ -208,11 +208,14 @@ public class NodeConfigurationActivity extends AppCompatActivity implements Inje
                 DialogFragmentTransactionStatus fragmentMessage = DialogFragmentTransactionStatus.newInstance("Transaction Failed", getString(R.string.operation_timed_out));
                 fragmentMessage.show(getSupportFragmentManager(), null);
             }
-            connectService conn = new connectService();
-            conn.createAndSendNodeConfigureObj(node.isConfigured(), node.getNodeName(), node.getIdentityKey(), node.getDeviceKey(),
-                    node.getTimeStamp(), node.getNumberOfElements(), node.getElements(), node.getProductIdentifier(), node.getCompanyIdentifier(),
-                    node.getVersionIdentifier(), node.isRelayFeatureSupported(), node.isProxyFeatureSupported(),
-                    node.isFriendFeatureSupported(), node.isLowPowerFeatureSupported(), node.getNodeIdentifier(), node.isProvisioned());
+            else{
+                connectService conn = new connectService();
+                conn.createAndSendNodeConfigureObj(node.isConfigured(), node.getNodeName(), node.getIdentityKey(), node.getDeviceKey(),
+                        node.getTimeStamp(), node.getNumberOfElements(), node.getElements(), node.getProductIdentifier(), node.getCompanyIdentifier(),
+                        node.getVersionIdentifier(), node.isRelayFeatureSupported(), node.isProxyFeatureSupported(),
+                        node.isFriendFeatureSupported(), node.isLowPowerFeatureSupported(), node.getNodeIdentifier(), node.isProvisioned());
+            }
+
         });
 
         mViewModel.getAppKeyAddStatus().observe(this, appKeyStatusLiveData -> {

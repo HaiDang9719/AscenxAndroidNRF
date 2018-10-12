@@ -33,6 +33,7 @@ import com.google.gson.GsonBuilder;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -126,6 +127,22 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
         this.mContext = context;
         this.mProvisioningSettings = new ProvisioningSettings(context);
         initGson();
+        UnprovisionedMeshNode unprovisionedMeshNode = null;
+        unprovisionedMeshNode = new UnprovisionedMeshNode();
+        unprovisionedMeshNode.setBluetoothDeviceAddress("D6:91:79:FC:6A:EA");
+        unprovisionedMeshNode.setNetworkKey(MeshParserUtils.toByteArray("35DFBF95F8CFF60DCF43DC19311E992E"));
+        unprovisionedMeshNode.setKeyIndex(MeshParserUtils.toByteArray("0000"));
+        unprovisionedMeshNode.setFlags(MeshParserUtils.toByteArray("0000"));
+        unprovisionedMeshNode.setIvIndex(ByteBuffer.allocate(4).putInt(0).array());
+        unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("0001"));
+        unprovisionedMeshNode.setTtl(5);
+        unprovisionedMeshNode.setConfigurationSrc(getConfiguratorSrc());
+        unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("F9A8A893A5C0521517EAD7CA036F32F1"));
+        unprovisionedMeshNode.setNodeName("Ascenx LightSwitch 1");
+        ProvisionedMeshNode node = new ProvisionedMeshNode(unprovisionedMeshNode);
+        node.setIsProvisioned(true);
+
+        onNodeProvisioned(node);
         initProvisionedNodes();
         intiConfigurationSrc();
         mMeshProvisioningHandler = new MeshProvisioningHandler(context, this, this);
