@@ -217,6 +217,22 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     }
 
     public Map<Integer, ProvisionedMeshNode> getProvisionedNodes() {
+//        UnprovisionedMeshNode unprovisionedMeshNode = null;
+//        unprovisionedMeshNode = new UnprovisionedMeshNode();
+//        unprovisionedMeshNode.setBluetoothDeviceAddress("D6:91:79:FC:6A:EA");
+//        unprovisionedMeshNode.setNetworkKey(MeshParserUtils.toByteArray("848AECB5EBFF1391594228AB80CE4F6D"));
+//        unprovisionedMeshNode.setKeyIndex(MeshParserUtils.toByteArray("0000"));
+//        unprovisionedMeshNode.setFlags(MeshParserUtils.toByteArray("0000"));
+//        unprovisionedMeshNode.setIvIndex(ByteBuffer.allocate(4).putInt(0).array());
+//        unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("0001"));
+//        unprovisionedMeshNode.setTtl(5);
+//        unprovisionedMeshNode.setConfigurationSrc(("0").getBytes(Charset.forName("UTF-8")));
+//        unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("A498453C5065A7F87999B8382AF9B66B"));
+//        unprovisionedMeshNode.setNodeName("Ascenx LightSwitch 1");
+//        ProvisionedMeshNode node = new ProvisionedMeshNode(unprovisionedMeshNode);
+//        Map<Integer, ProvisionedMeshNode> mPN = new LinkedHashMap<>();
+//        mPN.put(01, node);
+//        return mPN;
         return mProvisionedNodes;
     }
 
