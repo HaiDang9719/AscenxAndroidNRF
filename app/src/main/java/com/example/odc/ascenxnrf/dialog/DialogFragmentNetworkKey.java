@@ -74,6 +74,7 @@ public class DialogFragmentNetworkKey extends DialogFragment {
         if (getArguments() != null) {
             mNetworkKey = getArguments().getString(NETWORK_KEY);
         }
+        //mNetworkKey="848AECB5EBFF1391594228AB80CE4F6D";
     }
 
     @NonNull

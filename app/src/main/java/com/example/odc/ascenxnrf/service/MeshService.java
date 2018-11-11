@@ -919,23 +919,8 @@ public class MeshService extends Service implements BleMeshManagerCallbacks,
         }
 
         public Map<Integer, ProvisionedMeshNode> getProvisionedNodes() {
-            UnprovisionedMeshNode unprovisionedMeshNode = null;
-            unprovisionedMeshNode = new UnprovisionedMeshNode();
-            //unprovisionedMeshNode.setBluetoothDeviceAddress("6A6F9A40EDD0E7A3E4A498752152498A");
-            unprovisionedMeshNode.setNetworkKey(MeshParserUtils.toByteArray("6A6F9A40EDD0E7A3E4A498752152498A"));
-            unprovisionedMeshNode.setKeyIndex(MeshParserUtils.toByteArray("0000"));
-            unprovisionedMeshNode.setFlags(MeshParserUtils.toByteArray("0000"));
-            unprovisionedMeshNode.setIvIndex(MeshParserUtils.toByteArray("0000"));
-            unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("2B"));
-            unprovisionedMeshNode.setTtl(5);
-            unprovisionedMeshNode.setConfigurationSrc(("0").getBytes(Charset.forName("UTF-8")));
-            unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("67572279670323904790D1D636A25461"));
-            unprovisionedMeshNode.setNodeName("Ascenx LightSwitch 1");
-            ProvisionedMeshNode node = new ProvisionedMeshNode(unprovisionedMeshNode);
-            Map<Integer, ProvisionedMeshNode> mPN = new LinkedHashMap<>();
-            mPN.put(43, node);
-            return mPN;
-            //return mMeshManagerApi.getProvisionedNodes();
+
+            return mMeshManagerApi.getProvisionedNodes();
         }
 
         /**
