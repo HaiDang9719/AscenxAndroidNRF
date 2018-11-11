@@ -243,7 +243,7 @@ public class ProvisionedMeshNode extends BaseMeshNode {
         return Collections.unmodifiableMap(mAddedAppKeys);
     }
 
-    protected final void setAddedAppKey(final int index, final String appKey) {
+    public final void setAddedAppKey(final int index, final String appKey) {
         this.mAddedAppKeys.put(index, appKey);
     }
 
