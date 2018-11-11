@@ -183,6 +183,7 @@ class MeshMessageHandler implements InternalMeshMsgHandlerCallbacks {
                     genericOnOffSetStatus.setTransportCallbacks(mInternalTransportCallbacks);
                     genericOnOffSetStatus.setStatusCallbacks(mStatusCallbacks);
                     //Switch states
+                    Log.v(TAG, "abc"+mMeshMessageState.getMeshNode().getDeviceKey());
                     switchState(genericOnOffSetStatus);
                     break;
                 case GENERIC_ON_OFF_SET_UNACKNOWLEDGED_STATE:

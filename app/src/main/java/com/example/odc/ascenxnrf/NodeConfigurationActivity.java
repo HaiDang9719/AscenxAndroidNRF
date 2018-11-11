@@ -182,7 +182,12 @@ public class NodeConfigurationActivity extends AppCompatActivity implements Inje
                 }
             }
         });
-
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    actionGetCompositionData.performClick();
+//                }
+//            }, 5000);
         actionGetCompositionData.setOnClickListener(v -> {
             showProgressbar();
             mViewModel.sendGetCompositionData();

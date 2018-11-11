@@ -167,6 +167,12 @@ public class ProvisionedMeshNode extends BaseMeshNode {
         return Collections.unmodifiableMap(mElements);
     }
 
+    // new update - HD add new
+    public final void setElements(final Map<Integer, Element> ele)
+    {
+        this.mElements = ele;
+    }
+
     public final byte[] getDeviceKey() {
         return deviceKey;
     }

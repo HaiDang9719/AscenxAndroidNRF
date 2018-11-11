@@ -74,7 +74,8 @@ public abstract class BaseMeshNode implements Parcelable {
     protected boolean proxyFeatureSupported;
     protected boolean friendFeatureSupported;
     protected boolean lowPowerFeatureSupported;
-    protected final Map<Integer, Element> mElements = new LinkedHashMap<>();
+    // new update -HD remove final
+    protected Map<Integer, Element> mElements = new LinkedHashMap<>();
     protected List<Integer> mAddedAppKeyIndexes = new ArrayList<>();
     protected Map<Integer, String> mAddedAppKeys = new LinkedHashMap<>(); //Map containing the key as the app key index and the app key as the value
     protected byte[] generatedNetworkId;
@@ -108,6 +109,10 @@ public abstract class BaseMeshNode implements Parcelable {
 
     public final void setConfigured(final boolean configured) {
         isConfigured = configured;
+    }
+    // new update - HD add new
+    public final void setReplayFeatureSupport(final boolean isRelayFeatureSupported){
+        relayFeatureSupported = isRelayFeatureSupported;
     }
 
     public final String getNodeName() {
@@ -194,5 +199,9 @@ public abstract class BaseMeshNode implements Parcelable {
 
     public int getNumberOfElements() {
         return numberOfElements;
+    }
+    // new update - HD add new
+    public void setNumberOfElements(int numberOfElements) {
+        this.numberOfElements = numberOfElements;
     }
 }

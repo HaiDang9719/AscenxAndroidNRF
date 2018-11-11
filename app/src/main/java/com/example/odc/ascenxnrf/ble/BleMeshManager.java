@@ -200,7 +200,8 @@ public class BleMeshManager extends BleManager<BleMeshManagerCallbacks> {
     protected boolean shouldAutoConnect() {
         // If you want to connect to the device using autoConnect flag = true, return true here.
         // Read the documentation of this method.
-        return super.shouldAutoConnect();
+        return true;
+        //return super.shouldAutoConnect();
     }
 
     /**
