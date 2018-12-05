@@ -31,15 +31,26 @@ public final class SequenceNumber {
     private static final String KEY = "NRF_MESH_SEQUENCE_NUMBER";
 
     private static Integer mSequenceNumber;
-
+    private static boolean isFirstTime = true;
     //TODO check this class
     private static void initSequenceNumber(final Context context) {
+
+
         if (mSequenceNumber == null) {
             final SharedPreferences preferences = context.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
             if(preferences == null) { // Unit test started fail being unable to fetch preferences
                 mSequenceNumber = 0;
             } else {
-                mSequenceNumber = preferences.getInt(KEY, 0);
+                if(isFirstTime)
+                {
+                    mSequenceNumber = 200;
+                    isFirstTime = false;
+                }
+                else
+                {
+                    mSequenceNumber = preferences.getInt(KEY, 0);
+                }
+
             }
         }
     }

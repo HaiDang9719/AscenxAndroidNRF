@@ -1,4 +1,4 @@
-package com.example.odc.ascenxnrf.database;
+package no.nordicsemi.android.meshprovisioner.database;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -7,16 +7,12 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.google.android.gms.common.util.Hex;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -26,9 +22,9 @@ import no.nordicsemi.android.meshprovisioner.configuration.MeshModel;
 import no.nordicsemi.android.meshprovisioner.utils.Element;
 
 
-public class connectService {
+public class networkService {
     private String databaseMessage = "database Message";
-    private static final String TAG = connectService.class.getSimpleName();
+    private static final String TAG = networkService.class.getSimpleName();
     private static String netKey = "";
     private FirebaseAuth auth;
     Map<String, Object> nodeConfiguration = new HashMap<>();

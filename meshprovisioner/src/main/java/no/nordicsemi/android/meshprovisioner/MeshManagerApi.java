@@ -23,11 +23,25 @@
 package no.nordicsemi.android.meshprovisioner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -41,6 +55,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,6 +63,8 @@ import no.nordicsemi.android.meshprovisioner.configuration.ConfigMessageState;
 import no.nordicsemi.android.meshprovisioner.configuration.MeshModel;
 import no.nordicsemi.android.meshprovisioner.configuration.ProvisionedMeshNode;
 import no.nordicsemi.android.meshprovisioner.configuration.SequenceNumber;
+import no.nordicsemi.android.meshprovisioner.database.ProvisionedNodeInformation;
+import no.nordicsemi.android.meshprovisioner.database.networkInfomation;
 import no.nordicsemi.android.meshprovisioner.models.SigModelParser;
 import no.nordicsemi.android.meshprovisioner.states.UnprovisionedMeshNode;
 import no.nordicsemi.android.meshprovisioner.utils.AddressUtils;
@@ -124,40 +141,85 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     private int mIncomingBufferOffset;
     private byte[] mOutgoingBuffer;
     private int mOutgoingBufferOffset;
+    private static FirebaseAuth auth;
+    private static String UserId="";
 
     public MeshManagerApi(final Context context) {
         this.mContext = context;
         this.mProvisioningSettings = new ProvisioningSettings(context);
-        intiConfigurationSrc();
-        initGson();
-        UnprovisionedMeshNode unprovisionedMeshNode = null;
-        unprovisionedMeshNode = new UnprovisionedMeshNode();
-        Log.v(TAG, MeshParserUtils.bytesToHex(unprovisionedMeshNode.getDeviceKey(), true));
-        //unprovisionedMeshNode.setBluetoothDeviceAddress("D6:91:79:FC:6A:EA");
-        unprovisionedMeshNode.setBluetoothDeviceAddress("CC:6B:90:99:9D:53");
-        unprovisionedMeshNode.setNetworkKey(MeshParserUtils.toByteArray("C2171620CF98BD141933014BB06B2049"));
-        unprovisionedMeshNode.setKeyIndex(MeshParserUtils.toByteArray("0000"));
-        unprovisionedMeshNode.setFlags(MeshParserUtils.toByteArray("0000"));
-        unprovisionedMeshNode.setIvIndex(ByteBuffer.allocate(4).putInt(0).array());
-        unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("0022"));
-        //unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("0007"));
-        unprovisionedMeshNode.setTtl(5);
-        unprovisionedMeshNode.setConfigurationSrc(getConfiguratorSrc());
-        //unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("B0D2281085C253034C349105E6B7CC75"));
-        unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("9E65C11B0093D3A02883B84CA39E083F"));
-        unprovisionedMeshNode.setProvisionedTime(System.currentTimeMillis());
-        final byte[] provisionerRandom = SecureUtils.generateRandomNumber();
-        //unprovisionedMeshNode.setProvisionerRandom(provisionerRandom);
-        //unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("4B00B025F4C9C6650C9AC898F127D08D"));
-        unprovisionedMeshNode.setNodeName("Ascenx LightSwitch 1");
-        //unprovisionedMeshNode.setNodeName("nRF5x Mesh Switch");
-        //startProvisioning(unprovisionedMeshNode);
-        ProvisionedMeshNode node = new ProvisionedMeshNode(unprovisionedMeshNode);
-        //addAppKey(node, 3, "1230");
-        //node.setNumberOfElements(3);
-        //addAppKey(node,3,"D31793106AF8286FD96B6BA8B69F9392");
-        //node.setAddedAppKey(0000, "B5EA4FB1E854DF1B5CAFBD39AA224D96");
-        //node.setAddedAppKey(0000, "B7F675E88D8AA1DCF1C2203E5DC6CB1");
+        //Get Firebase auth instance
+        auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            UserId = auth.getCurrentUser().getUid();
+            Log.d(TAG, "abc" + UserId);
+            DatabaseReference mDatabase;
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference refNetwork = mDatabase.child("networkInformation");
+            refNetwork.addValueEventListener(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot item : dataSnapshot.getChildren()) {
+                        Log.d(TAG, "UserId: " + item.getKey());
+                        if (Objects.equals(item.getKey(), UserId)) {
+                            networkInfomation nInfo = item.getValue(networkInfomation.class);
+                            assert nInfo != null;
+                            mProvisioningSettings.setNetworkKey(nInfo.getNetworkKey());
+                        }
+                    }
+                    networkInfomation nInfo = new networkInfomation(mProvisioningSettings.getFlags(), mProvisioningSettings.getGlobalTtl(),
+                            mProvisioningSettings.getIvIndex(), mProvisioningSettings.getKeyIndex(), mProvisioningSettings.getNetworkKey(), mProvisioningSettings.getUnicastAddress());
+                    mDatabase.child("networkInformation").child(auth.getCurrentUser().getUid()).setValue(nInfo);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+
+            });
+
+            intiConfigurationSrc();
+            initGson();
+
+            DatabaseReference refProvisionedNode = mDatabase.child("ProvisionedNodeInformation");
+            refProvisionedNode.addValueEventListener(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot item : dataSnapshot.getChildren()) {
+                        Log.d(TAG, "UserId: " + item.getKey());
+                        if (Objects.equals(item.getKey(), UserId)) {
+                            ProvisionedNodeInformation pInfo = item.getValue(ProvisionedNodeInformation.class);
+                            assert pInfo != null;
+                            UnprovisionedMeshNode unprovisionedMeshNode = null;
+                            unprovisionedMeshNode = new UnprovisionedMeshNode();
+                            Log.v(TAG, MeshParserUtils.bytesToHex(unprovisionedMeshNode.getDeviceKey(), true));
+                            //unprovisionedMeshNode.setBluetoothDeviceAddress("D6:91:79:FC:6A:EA");
+                            unprovisionedMeshNode.setBluetoothDeviceAddress("CC:6B:90:99:9D:53");
+                            unprovisionedMeshNode.setNetworkKey(MeshParserUtils.toByteArray("C2171620CF98BD141933014BB06B2049"));
+                            unprovisionedMeshNode.setKeyIndex(MeshParserUtils.toByteArray("0000"));
+                            unprovisionedMeshNode.setFlags(MeshParserUtils.toByteArray("0000"));
+                            unprovisionedMeshNode.setIvIndex(ByteBuffer.allocate(4).putInt(0).array());
+                            unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("001C"));
+                            //unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("0007"));
+                            unprovisionedMeshNode.setTtl(5);
+                            unprovisionedMeshNode.setConfigurationSrc(getConfiguratorSrc());
+                            //unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("B0D2281085C253034C349105E6B7CC75"));
+                            unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("40785E0A76DDCB4824C23A07535ABA84"));
+                            unprovisionedMeshNode.setProvisionedTime(System.currentTimeMillis());
+                            final byte[] provisionerRandom = SecureUtils.generateRandomNumber();
+                            //unprovisionedMeshNode.setProvisionerRandom(provisionerRandom);
+                            //unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("4B00B025F4C9C6650C9AC898F127D08D"));
+                            unprovisionedMeshNode.setNodeName("Ascenx LightSwitch 1");
+                            //unprovisionedMeshNode.setNodeName("nRF5x Mesh Switch");
+                            //startProvisioning(unprovisionedMeshNode);
+                            ProvisionedMeshNode node = new ProvisionedMeshNode(unprovisionedMeshNode);
+                            //addAppKey(node, 3, "1230");
+                            //node.setNumberOfElements(3);
+                            //addAppKey(node,3,"D31793106AF8286FD96B6BA8B69F9392");
+                            //node.setAddedAppKey(0000, "B5EA4FB1E854DF1B5CAFBD39AA224D96");
+                            //node.setAddedAppKey(0000, "B7F675E88D8AA1DCF1C2203E5DC6CB1");
 //        final Map<Integer, MeshModel> models = new LinkedHashMap<>();
 //        final int modelId = 2;
 //        models.put(modelId, SigModelParser.getSigModel(modelId));
@@ -175,28 +237,38 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
 //        mElements.put(2, ele2);
 //        mElements.put(3, ele3);
 //        node.setElements(mElements);
-        node.setNodeIdentifier("421F11299F2F10DA");
-        //node.setNodeIdentifier("E3D9FFA7E69871B8");
-        node.setReplayFeatureSupport(true);
-        //node.setConfigured(true);
-        node.setIsProvisioned(true);
-        //node.setK2Ouput(SecureUtils.calculateK2(MeshParserUtils.toByteArray("C2171620CF98BD141933014BB06B2049"), SecureUtils.K2_MASTER_INPUT));
+                            node.setNodeIdentifier("17AB127732A69DBD");
+                            //node.setNodeIdentifier("E3D9FFA7E69871B8");
+                            node.setReplayFeatureSupport(true);
+                            //node.setConfigured(true);
+                            node.setIsProvisioned(true);
+                            onNodeProvisioned(node);
+                            initProvisionedNodes();
+                        }
+                    }
+                    initProvisionedNodes();
+                }
 
-        onNodeProvisioned(node);
-        initProvisionedNodes();
-        mMeshProvisioningHandler = new MeshProvisioningHandler(context, this, this);
-        mMeshMessageHandler = new MeshMessageHandler(context, this, this);
-        mProvisioningSettings.setNetworkKey("C2171620CF98BD141933014BB06B2049");
-        //mMeshProvisioningHandler.sendProvisioningStart(unprovisionedMeshNode);
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        //mMeshMessageHandler.bindAppKey(node, 0, MeshParserUtils.toByteArray("0002"), 4096, 0000 );
-        //mProvisioningSettings.setUnicastAddress(1);
+                }
+
+            });
+            mMeshProvisioningHandler = new MeshProvisioningHandler(context, this, this);
+            mMeshMessageHandler = new MeshMessageHandler(context, this, this);
+            //mMeshProvisioningHandler.sendProvisioningStart(unprovisionedMeshNode);
+
+            //mMeshMessageHandler.bindAppKey(node, 0, MeshParserUtils.toByteArray("0002"), 4096, 0000 );
+            //mProvisioningSettings.setUnicastAddress(1);
+        }
+
     }
 
     private void intiConfigurationSrc() {
         final SharedPreferences preferences = mContext.getSharedPreferences(CONFIGURATION_SRC, Context.MODE_PRIVATE);
         final int tempSrc = preferences.getInt(SRC, 0);
-        if(tempSrc != 0)
+        if (tempSrc != 0)
             mConfigurationSrc = new byte[]{(byte) ((tempSrc >> 8) & 0xFF), (byte) (tempSrc & 0xFF)};
     }
 
@@ -217,22 +289,6 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     }
 
     public Map<Integer, ProvisionedMeshNode> getProvisionedNodes() {
-//        UnprovisionedMeshNode unprovisionedMeshNode = null;
-//        unprovisionedMeshNode = new UnprovisionedMeshNode();
-//        unprovisionedMeshNode.setBluetoothDeviceAddress("D6:91:79:FC:6A:EA");
-//        unprovisionedMeshNode.setNetworkKey(MeshParserUtils.toByteArray("848AECB5EBFF1391594228AB80CE4F6D"));
-//        unprovisionedMeshNode.setKeyIndex(MeshParserUtils.toByteArray("0000"));
-//        unprovisionedMeshNode.setFlags(MeshParserUtils.toByteArray("0000"));
-//        unprovisionedMeshNode.setIvIndex(ByteBuffer.allocate(4).putInt(0).array());
-//        unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("0001"));
-//        unprovisionedMeshNode.setTtl(5);
-//        unprovisionedMeshNode.setConfigurationSrc(("0").getBytes(Charset.forName("UTF-8")));
-//        unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("A498453C5065A7F87999B8382AF9B66B"));
-//        unprovisionedMeshNode.setNodeName("Ascenx LightSwitch 1");
-//        ProvisionedMeshNode node = new ProvisionedMeshNode(unprovisionedMeshNode);
-//        Map<Integer, ProvisionedMeshNode> mPN = new LinkedHashMap<>();
-//        mPN.put(01, node);
-//        return mPN;
         return mProvisionedNodes;
     }
 
@@ -261,13 +317,13 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
      */
     public boolean setConfiguratorSrc(final byte[] configurationSrc) throws IllegalArgumentException {
         final int tempSrc = (configurationSrc[0] & 0xFF) << 8 | (configurationSrc[1] & 0xFF);
-        if(MeshParserUtils.validateUnicastAddressInput(mContext, tempSrc)) {
-            if(!mProvisionedNodes.containsKey(tempSrc)){
+        if (MeshParserUtils.validateUnicastAddressInput(mContext, tempSrc)) {
+            if (!mProvisionedNodes.containsKey(tempSrc)) {
                 mConfigurationSrc = configurationSrc;
                 saveSrc();
 
                 //Set the configuration source for all provisioned nodes
-                for(Map.Entry<Integer, ProvisionedMeshNode> entry : mProvisionedNodes.entrySet()) {
+                for (Map.Entry<Integer, ProvisionedMeshNode> entry : mProvisionedNodes.entrySet()) {
                     entry.getValue().setConfigurationSrc(mConfigurationSrc);
                 }
 
@@ -334,6 +390,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
         mProvisionedNodes.put(unicastAddress, meshNode);
         incrementUnicastAddress(meshNode);
         saveProvisionedNode(meshNode);
+
     }
 
     private void saveSrc() {
@@ -361,7 +418,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     private void saveProvisionedNodes() {
         final SharedPreferences preferences = mContext.getSharedPreferences(PROVISIONED_NODES_FILE, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
-        for(Map.Entry<Integer, ProvisionedMeshNode> entry : mProvisionedNodes.entrySet()) {
+        for (Map.Entry<Integer, ProvisionedMeshNode> entry : mProvisionedNodes.entrySet()) {
             final ProvisionedMeshNode node = entry.getValue();
             final String unicastAddress = MeshParserUtils.bytesToHex(node.getUnicastAddress(), true);
             final String provisionedNode = mGson.toJson(node);
@@ -396,7 +453,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
         int unicastAdd = (meshNode.getUnicastAddressInt() + meshNode.getNumberOfElements());
         //We check if the incremented unicast address is already taken by the app/configurator
         final int tempSrc = (mConfigurationSrc[0] & 0xFF) << 8 | (mConfigurationSrc[1] & 0xFF);
-        if(unicastAdd == tempSrc) {
+        if (unicastAdd == tempSrc) {
             unicastAdd = unicastAdd + 1;
         }
         mProvisioningSettings.setUnicastAddress(unicastAdd);
@@ -515,6 +572,15 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
             //We update the mesh node in our map of mesh nodes
             mProvisionedNodes.put(unicast, meshNode);
             saveProvisionedNode(meshNode);
+            ProvisionedNodeInformation pInfo = new ProvisionedNodeInformation(meshNode.isConfigured(), meshNode.getNodeName(), meshNode.getIdentityKey(),
+                    meshNode.getDeviceKey(), meshNode.getTimeStamp(), meshNode.getNumberOfElements(),
+                    meshNode.getElements(), meshNode.getProductIdentifier(), meshNode.getCompanyIdentifier(), meshNode.getVersionIdentifier(),
+                    meshNode.isProxyFeatureSupported(), meshNode.isFriendFeatureSupported(), meshNode.isFriendFeatureSupported(),
+                    meshNode.isLowPowerFeatureSupported(), meshNode.getNodeIdentifier(), meshNode.isProvisioned());
+            Map<String, Object> childAdd = pInfo.toMap();
+            DatabaseReference mDatabase;
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+            mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).setValue(childAdd);
         }
     }
 
@@ -658,7 +724,6 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     }
 
 
-
     /**
      * Identifies the node that is to be provisioned.
      * <p>
@@ -666,9 +731,8 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
      * This method must be invoked before calling {@link #startProvisioning(UnprovisionedMeshNode)}
      * </p
      *
-     * @param address         Bluetooth address of the node
-     * @param nodeName        Friendly node name
-     *
+     * @param address  Bluetooth address of the node
+     * @param nodeName Friendly node name
      */
     public void identifyNode(@NonNull final String address, final String nodeName) throws IllegalArgumentException {
         //We must save all the provisioning data here so that they could be reused when provisioning the next devices
@@ -687,7 +751,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
      * This method will continue the provisioning process that was started by invoking {@link #identifyNode(String, String)}.
      * </p>
      *
-     * @param unprovisionedMeshNode         Bluetooth address of the node
+     * @param unprovisionedMeshNode Bluetooth address of the node
      */
     public void startProvisioning(@NonNull final UnprovisionedMeshNode unprovisionedMeshNode) throws IllegalArgumentException {
         mMeshProvisioningHandler.startProvisioning(unprovisionedMeshNode);
@@ -988,7 +1052,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
      * @param provisionedMeshNode mesh node to be reset
      */
     public void resetMeshNode(@NonNull final ProvisionedMeshNode provisionedMeshNode) {
-        if(provisionedMeshNode == null)
+        if (provisionedMeshNode == null)
             throw new IllegalArgumentException("Mesh node cannot be null!");
         mMeshMessageHandler.resetMeshNode(provisionedMeshNode);
     }
