@@ -1,5 +1,8 @@
 package no.nordicsemi.android.meshprovisioner.database;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class networkInfomation {
     int flags;
     int globalTtl;
@@ -69,5 +72,15 @@ public class networkInfomation {
 
     public void setFlags(int flags) {
         this.flags = flags;
+    }
+    public Map<String, Object> update(){
+        Map<String, Object> networkUpdate = new HashMap<>();
+        networkUpdate.put("flags", flags);
+        networkUpdate.put("globalTtl", globalTtl);
+        networkUpdate.put("ivIndex", ivIndex);
+        networkUpdate.put("networkKey", networkKey);
+        networkUpdate.put("unicastAddress", unicastAddress);
+        return networkUpdate;
+
     }
 }

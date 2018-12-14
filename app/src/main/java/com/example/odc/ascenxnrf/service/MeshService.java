@@ -335,6 +335,7 @@ public class MeshService extends Service implements BleMeshManagerCallbacks,
     public void onDeviceReady(final BluetoothDevice device) {
         mOnDeviceReady = true;
         sendBroadcastDeviceReady(true);
+        mMeshManagerApi.setBluetoothAddress(device.getAddress());
 
         if (!mConnectToMeshNetwork) {
             if (mBleMeshManager.isProvisioningComplete()) {

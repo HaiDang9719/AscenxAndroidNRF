@@ -77,21 +77,36 @@ public class ProvisioningSettings extends NetworkSettings {
         editor.apply();
     }
 
-    private void addAppKeys() {
-        final SharedPreferences preferences = mContext.getSharedPreferences(APPLICATION_KEYS, Context.MODE_PRIVATE);
-        final Map<String, ?> keys = preferences.getAll();
-        if (!keys.isEmpty()) {
-            appKeys.clear();
-            for (int i = 0; i < keys.size(); i++) {
-                appKeys.add(i, String.valueOf(keys.get(String.valueOf(i))));
-            }
-        } else {
-            appKeys.add(SecureUtils.generateRandomApplicationKey().toUpperCase());
-            appKeys.add(SecureUtils.generateRandomApplicationKey().toUpperCase());
-            appKeys.add(SecureUtils.generateRandomApplicationKey().toUpperCase());
-        }
-        saveApplicationKeys();
+//    private void addAppKeys() {
+//        final SharedPreferences preferences = mContext.getSharedPreferences(APPLICATION_KEYS, Context.MODE_PRIVATE);
+//        final Map<String, ?> keys = preferences.getAll();
+//        if (!keys.isEmpty()) {
+//            appKeys.clear();
+//            for (int i = 0; i < keys.size(); i++) {
+//                appKeys.add(i, String.valueOf(keys.get(String.valueOf(i))));
+//            }
+//        } else {
+//            appKeys.add(SecureUtils.generateRandomApplicationKey().toUpperCase());
+//            appKeys.add(SecureUtils.generateRandomApplicationKey().toUpperCase());
+//            appKeys.add(SecureUtils.generateRandomApplicationKey().toUpperCase());
+//        }
+//        saveApplicationKeys();
+//    }
+private void addAppKeys() {
+    final SharedPreferences preferences = mContext.getSharedPreferences(APPLICATION_KEYS, Context.MODE_PRIVATE);
+    final Map<String, ?> keys = preferences.getAll();
+    if (!keys.isEmpty()) {
+        appKeys.clear();
+        appKeys.add("B5EA4FB1E854DF1B5CAFBD39AA224D96");
+        appKeys.add("BED2144599172126094631864A171AFC");
+        appKeys.add("3D676A3A14C548A02D32A40278BA7BBC");
+    } else {
+        appKeys.add("B5EA4FB1E854DF1B5CAFBD39AA224D96");
+        appKeys.add("BED2144599172126094631864A171AFC");
+        appKeys.add("3D676A3A14C548A02D32A40278BA7BBC");
     }
+    saveApplicationKeys();
+}
 
     public String getNetworkKey() {
         return networkKey;

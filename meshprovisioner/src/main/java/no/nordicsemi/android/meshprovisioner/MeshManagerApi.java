@@ -51,6 +51,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -129,6 +130,10 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
      * Length of the network id contained in the advertisement service data
      */
     private final static int ADVERTISED_NETWWORK_ID_LENGTH = 8;
+    //Sequence Number class
+    private static final String PREFS_SEQUENCE_NUMBER = "PREFS_SEQUENCE_NUMBER";
+    private static final String KEY = "NRF_MESH_SEQUENCE_NUMBER";
+
     private final Map<Integer, ProvisionedMeshNode> mProvisionedNodes = new LinkedHashMap<>();
     private final ProvisioningSettings mProvisioningSettings;
     private Context mContext;
@@ -143,6 +148,11 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     private int mOutgoingBufferOffset;
     private static FirebaseAuth auth;
     private static String UserId="";
+    private static boolean isFirstTime = true;
+    private static DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private ArrayList<ProvisionedNodeInformation> arrayMeshNode = new ArrayList<>();
+    private static int currentSequenceNumber = 0;
+    private static String bluetoothAdress;
 
     public MeshManagerApi(final Context context) {
         this.mContext = context;
@@ -152,8 +162,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
         if (auth.getCurrentUser() != null) {
             UserId = auth.getCurrentUser().getUid();
             Log.d(TAG, "abc" + UserId);
-            DatabaseReference mDatabase;
-            mDatabase = FirebaseDatabase.getInstance().getReference();
+
             DatabaseReference refNetwork = mDatabase.child("networkInformation");
             refNetwork.addValueEventListener(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -188,65 +197,26 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot item : dataSnapshot.getChildren()) {
-                        Log.d(TAG, "UserId: " + item.getKey());
+                        Log.d(TAG, "UserId-Provision: " + item.getKey());
                         if (Objects.equals(item.getKey(), UserId)) {
-                            ProvisionedNodeInformation pInfo = item.getValue(ProvisionedNodeInformation.class);
-                            assert pInfo != null;
-                            UnprovisionedMeshNode unprovisionedMeshNode = null;
-                            unprovisionedMeshNode = new UnprovisionedMeshNode();
-                            Log.v(TAG, MeshParserUtils.bytesToHex(unprovisionedMeshNode.getDeviceKey(), true));
-                            //unprovisionedMeshNode.setBluetoothDeviceAddress("D6:91:79:FC:6A:EA");
-                            unprovisionedMeshNode.setBluetoothDeviceAddress("CC:6B:90:99:9D:53");
-                            unprovisionedMeshNode.setNetworkKey(MeshParserUtils.toByteArray("C2171620CF98BD141933014BB06B2049"));
-                            unprovisionedMeshNode.setKeyIndex(MeshParserUtils.toByteArray("0000"));
-                            unprovisionedMeshNode.setFlags(MeshParserUtils.toByteArray("0000"));
-                            unprovisionedMeshNode.setIvIndex(ByteBuffer.allocate(4).putInt(0).array());
-                            unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("001C"));
-                            //unprovisionedMeshNode.setUnicastAddress(MeshParserUtils.toByteArray("0007"));
-                            unprovisionedMeshNode.setTtl(5);
-                            unprovisionedMeshNode.setConfigurationSrc(getConfiguratorSrc());
-                            //unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("B0D2281085C253034C349105E6B7CC75"));
-                            unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("40785E0A76DDCB4824C23A07535ABA84"));
-                            unprovisionedMeshNode.setProvisionedTime(System.currentTimeMillis());
-                            final byte[] provisionerRandom = SecureUtils.generateRandomNumber();
-                            //unprovisionedMeshNode.setProvisionerRandom(provisionerRandom);
-                            //unprovisionedMeshNode.setDeviceKey(MeshParserUtils.toByteArray("4B00B025F4C9C6650C9AC898F127D08D"));
-                            unprovisionedMeshNode.setNodeName("Ascenx LightSwitch 1");
-                            //unprovisionedMeshNode.setNodeName("nRF5x Mesh Switch");
-                            //startProvisioning(unprovisionedMeshNode);
-                            ProvisionedMeshNode node = new ProvisionedMeshNode(unprovisionedMeshNode);
-                            //addAppKey(node, 3, "1230");
-                            //node.setNumberOfElements(3);
-                            //addAppKey(node,3,"D31793106AF8286FD96B6BA8B69F9392");
-                            //node.setAddedAppKey(0000, "B5EA4FB1E854DF1B5CAFBD39AA224D96");
-                            //node.setAddedAppKey(0000, "B7F675E88D8AA1DCF1C2203E5DC6CB1");
-//        final Map<Integer, MeshModel> models = new LinkedHashMap<>();
-//        final int modelId = 2;
-//        models.put(modelId, SigModelParser.getSigModel(modelId));
-//        Element ele1 = new Element(MeshParserUtils.toByteArray("0001"),0,2,0, models);
-//        final Map<Integer, MeshModel> models2 = new LinkedHashMap<>();
-//        final int modelId2 = 4096;
-//        models2.put(modelId2, SigModelParser.getSigModel(modelId2));
-//        Element ele2 = new Element(MeshParserUtils.toByteArray("0002"),0,2,0, models2);
-//        final Map<Integer, MeshModel> models3 = new LinkedHashMap<>();
-//        final int modelId3 = 4096;
-//        models3.put(modelId3, SigModelParser.getSigModel(modelId3));
-//        Element ele3 = new Element(MeshParserUtils.toByteArray("0003"),0,2,0, models3);
-//        final Map<Integer, Element> mElements = new LinkedHashMap<>();
-//        mElements.put(1, ele1);
-//        mElements.put(2, ele2);
-//        mElements.put(3, ele3);
-//        node.setElements(mElements);
-                            node.setNodeIdentifier("17AB127732A69DBD");
-                            //node.setNodeIdentifier("E3D9FFA7E69871B8");
-                            node.setReplayFeatureSupport(true);
-                            //node.setConfigured(true);
-                            node.setIsProvisioned(true);
-                            onNodeProvisioned(node);
-                            initProvisionedNodes();
+                            ProvisionedNodeInformation pInfo = new ProvisionedNodeInformation(item);
+                            arrayMeshNode.add(pInfo);
+                            Log.d(TAG, "is First time : " + isFirstTime);
+                            if(isFirstTime){
+                                currentSequenceNumber = pInfo.getNetSequeceNumber();
+                                final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                Log.d(TAG, "sequenceNumber : " + currentSequenceNumber );
+                                editor.putInt(KEY, currentSequenceNumber );
+                                editor.apply();
+                                isFirstTime = false;
+                            }
+                            onNodeProvisioned(pInfo.createProvisionedMeshNode(getConfiguratorSrc(), mProvisioningSettings.getNetworkKey()));
+                            Log.v(TAG, "deviceKeyTesting"+MeshParserUtils.bytesToHex(pInfo.getDeviceKey(), true));
+                            //pInfo = null;
+                            //initProvisionedNodes();
                         }
                     }
-                    initProvisionedNodes();
                 }
 
                 @Override
@@ -255,6 +225,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
                 }
 
             });
+            initProvisionedNodes();
             mMeshProvisioningHandler = new MeshProvisioningHandler(context, this, this);
             mMeshMessageHandler = new MeshMessageHandler(context, this, this);
             //mMeshProvisioningHandler.sendProvisioningStart(unprovisionedMeshNode);
@@ -263,6 +234,23 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
             //mProvisioningSettings.setUnicastAddress(1);
         }
 
+    }
+
+    public void increaseSequenceNumber(int currentSN, String bluetoothDeviceAdd){
+        final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        Log.d(TAG, "sequenceNumber : " + currentSN + 1);
+        editor.putInt(KEY, currentSN + 1);
+        editor.apply();
+        Log.d(TAG, "update sequence number - test new sequence number: "+currentSN);
+        Map<String, Object> sequenceUpdate = new HashMap<>();
+        sequenceUpdate.put("netSequenceNumber", currentSN+1);
+        mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(bluetoothDeviceAdd).updateChildren(sequenceUpdate);
+
+    }
+    public void setBluetoothAddress(String address){
+        bluetoothAdress = address;
+        Log.d(TAG, "bluetoothAdress: "+bluetoothAdress);
     }
 
     private void intiConfigurationSrc() {
@@ -390,6 +378,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
         mProvisionedNodes.put(unicastAddress, meshNode);
         incrementUnicastAddress(meshNode);
         saveProvisionedNode(meshNode);
+        Log.d(TAG, "test Node Identifier: "+meshNode.getNodeIdentifier());
 
     }
 
@@ -572,15 +561,17 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
             //We update the mesh node in our map of mesh nodes
             mProvisionedNodes.put(unicast, meshNode);
             saveProvisionedNode(meshNode);
+            Log.d(TAG,"update provisioned node to database");
+            final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
             ProvisionedNodeInformation pInfo = new ProvisionedNodeInformation(meshNode.isConfigured(), meshNode.getNodeName(), meshNode.getIdentityKey(),
                     meshNode.getDeviceKey(), meshNode.getTimeStamp(), meshNode.getNumberOfElements(),
                     meshNode.getElements(), meshNode.getProductIdentifier(), meshNode.getCompanyIdentifier(), meshNode.getVersionIdentifier(),
                     meshNode.isProxyFeatureSupported(), meshNode.isFriendFeatureSupported(), meshNode.isFriendFeatureSupported(),
-                    meshNode.isLowPowerFeatureSupported(), meshNode.getNodeIdentifier(), meshNode.isProvisioned());
+                    meshNode.isLowPowerFeatureSupported(), meshNode.getNodeIdentifier(), meshNode.isProvisioned(), meshNode.getSequenceNumber(), meshNode.getUnicastAddress(), preferences.getInt(KEY, 0));
             Map<String, Object> childAdd = pInfo.toMap();
             DatabaseReference mDatabase;
             mDatabase = FirebaseDatabase.getInstance().getReference();
-            mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).setValue(childAdd);
+            mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(meshNode.getBluetoothDeviceAddress()).setValue(childAdd);
         }
     }
 
@@ -888,6 +879,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     public void getCompositionData(final ProvisionedMeshNode meshNode) {
         final int aszmic = 0;
         mMeshMessageHandler.sendCompositionDataGet(meshNode, aszmic);
+        increaseSequenceNumber(currentSequenceNumber, bluetoothAdress);
     }
 
     /**
@@ -968,6 +960,14 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
         SequenceNumber.resetSequenceNumber(mContext);
         mProvisioningSettings.clearProvisioningData();
         mProvisioningSettings.generateProvisioningData();
+        Log.d(TAG, "update network info - test new networkKey: "+mProvisioningSettings.getNetworkKey());
+        networkInfomation nInfo = new networkInfomation(mProvisioningSettings.getFlags(), mProvisioningSettings.getGlobalTtl(),
+                mProvisioningSettings.getIvIndex(), mProvisioningSettings.getKeyIndex(), mProvisioningSettings.getNetworkKey(), mProvisioningSettings.getUnicastAddress());
+        Map<String, Object> networkUpdate = new HashMap<>();
+        networkUpdate = nInfo.update();
+        mDatabase.child("networkInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).updateChildren(networkUpdate);
+
+
     }
 
     /**

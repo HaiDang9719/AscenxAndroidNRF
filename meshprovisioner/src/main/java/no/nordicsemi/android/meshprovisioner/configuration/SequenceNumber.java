@@ -24,6 +24,7 @@ package no.nordicsemi.android.meshprovisioner.configuration;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public final class SequenceNumber {
 
@@ -41,15 +42,16 @@ public final class SequenceNumber {
             if(preferences == null) { // Unit test started fail being unable to fetch preferences
                 mSequenceNumber = 0;
             } else {
-                if(isFirstTime)
-                {
-                    mSequenceNumber = 200;
-                    isFirstTime = false;
-                }
-                else
-                {
+//                if(isFirstTime)
+//               {
+//                    mSequenceNumber = 8;
+//                    isFirstTime = false;
+//                }
+//                else
+//                {
                     mSequenceNumber = preferences.getInt(KEY, 0);
-                }
+                    Log.d("test","abc: "+mSequenceNumber);
+//                }
 
             }
         }

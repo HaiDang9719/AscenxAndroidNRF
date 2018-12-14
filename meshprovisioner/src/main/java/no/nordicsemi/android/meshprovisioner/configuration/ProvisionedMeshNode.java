@@ -237,6 +237,10 @@ public class ProvisionedMeshNode extends BaseMeshNode {
         this.bluetoothAddress = address;
     }
 
+    public final String getBluetoothDeviceAddress() {
+        return bluetoothAddress;
+    }
+
     public final String getNodeIdentifier() {
         return nodeIdentifier;
     }
@@ -251,6 +255,9 @@ public class ProvisionedMeshNode extends BaseMeshNode {
 
     public final void setAddedAppKey(final int index, final String appKey) {
         this.mAddedAppKeys.put(index, appKey);
+    }
+    public final void setAddedAppKey() {
+        this.mAddedAppKeys.put(1, "B5EA4FB1E854DF1B5CAFBD39AA224D96");
     }
 
     public final byte[] getGeneratedNetworkId() {
