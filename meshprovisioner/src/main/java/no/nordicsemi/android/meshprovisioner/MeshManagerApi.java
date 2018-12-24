@@ -149,6 +149,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     private static FirebaseAuth auth;
     private static String UserId="";
     private static boolean isFirstTime = true;
+    private static boolean isFirstTimeProvision = false;
     private static DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ArrayList<ProvisionedNodeInformation> arrayMeshNode = new ArrayList<>();
     private static int currentSequenceNumber = 0;
@@ -211,7 +212,8 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
                                 editor.apply();
                                 isFirstTime = false;
                             }
-                            onNodeProvisioned(pInfo.createProvisionedMeshNode(getConfiguratorSrc(), mProvisioningSettings.getNetworkKey()));
+                            ProvisionedMeshNode pNode = pInfo.createProvisionedMeshNode(getConfiguratorSrc(), mProvisioningSettings.getNetworkKey());
+                            onNodeProvisioned(pNode);
                             Log.v(TAG, "deviceKeyTesting"+MeshParserUtils.bytesToHex(pInfo.getDeviceKey(), true));
                             //pInfo = null;
                             //initProvisionedNodes();
@@ -239,10 +241,12 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     public void increaseSequenceNumber(int currentSN, String bluetoothDeviceAdd){
         final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        Log.d(TAG, "sequenceNumber : " + currentSN + 1);
-        editor.putInt(KEY, currentSN + 1);
+        int newSN = currentSN + 1;
+        Log.d(TAG, "old sequenceNumber : " + currentSN);
+        currentSequenceNumber = newSN;
+        editor.putInt(KEY, newSN + 1);
         editor.apply();
-        Log.d(TAG, "update sequence number - test new sequence number: "+currentSN);
+        Log.d(TAG, "update sequence number - test new sequence number: "+newSN);
         Map<String, Object> sequenceUpdate = new HashMap<>();
         sequenceUpdate.put("netSequenceNumber", currentSN+1);
         mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(bluetoothDeviceAdd).updateChildren(sequenceUpdate);
@@ -562,16 +566,27 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
             mProvisionedNodes.put(unicast, meshNode);
             saveProvisionedNode(meshNode);
             Log.d(TAG,"update provisioned node to database");
-            final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
-            ProvisionedNodeInformation pInfo = new ProvisionedNodeInformation(meshNode.isConfigured(), meshNode.getNodeName(), meshNode.getIdentityKey(),
-                    meshNode.getDeviceKey(), meshNode.getTimeStamp(), meshNode.getNumberOfElements(),
-                    meshNode.getElements(), meshNode.getProductIdentifier(), meshNode.getCompanyIdentifier(), meshNode.getVersionIdentifier(),
-                    meshNode.isProxyFeatureSupported(), meshNode.isFriendFeatureSupported(), meshNode.isFriendFeatureSupported(),
-                    meshNode.isLowPowerFeatureSupported(), meshNode.getNodeIdentifier(), meshNode.isProvisioned(), meshNode.getSequenceNumber(), meshNode.getUnicastAddress(), preferences.getInt(KEY, 0));
-            Map<String, Object> childAdd = pInfo.toMap();
+            Log.d(TAG,"is first time provision: "+isFirstTimeProvision);
             DatabaseReference mDatabase;
             mDatabase = FirebaseDatabase.getInstance().getReference();
-            mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(meshNode.getBluetoothDeviceAddress()).setValue(childAdd);
+            Log.d(TAG, "test"+mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child("EDAS").getKey().equals(bluetoothAdress));
+            if(!mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(bluetoothAdress).getKey().equals(bluetoothAdress)){
+                final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
+                ProvisionedNodeInformation pInfo = new ProvisionedNodeInformation(meshNode.isConfigured(), meshNode.getNodeName(), meshNode.getIdentityKey(),
+                        meshNode.getDeviceKey(), meshNode.getTimeStamp(), meshNode.getNumberOfElements(),
+                        meshNode.getElements(),
+                        meshNode.getProductIdentifier(),
+                        meshNode.getCompanyIdentifier(),
+                        meshNode.getVersionIdentifier(),
+                        meshNode.isProxyFeatureSupported(), meshNode.isFriendFeatureSupported(), meshNode.isFriendFeatureSupported(),
+                        meshNode.isLowPowerFeatureSupported(), meshNode.getNodeIdentifier(), meshNode.isProvisioned(), meshNode.getSequenceNumber(), meshNode.getUnicastAddress(), preferences.getInt(KEY, 0));
+                Map<String, Object> childAdd = pInfo.toMap();
+                mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(meshNode.getBluetoothDeviceAddress()).setValue(childAdd);
+                isFirstTimeProvision = false;
+            }
+            increaseSequenceNumber(currentSequenceNumber, bluetoothAdress);
+            ;
+
         }
     }
 
@@ -904,6 +919,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
      * @param appKeyIndex    index of the app key
      */
     public void bindAppKey(final ProvisionedMeshNode meshNode, final byte[] elementAddress, final MeshModel model, final int appKeyIndex) {
+        Log.d(TAG, "bind app key for model: "+ model.getModelName());
         mMeshMessageHandler.bindAppKey(meshNode, 0, elementAddress, model.getModelId(), appKeyIndex);
     }
 

@@ -54,6 +54,8 @@ public abstract class MeshModel implements Parcelable {
 
     public MeshModel(final int modelId) {
         this.mModelId = modelId;
+        mBoundAppKeyIndexes.add(1);
+        mBoundAppKeys.put(1, "B5EA4FB1E854DF1B5CAFBD39AA224D96");
     }
 
     protected MeshModel(final Parcel in) {
@@ -121,7 +123,8 @@ public abstract class MeshModel implements Parcelable {
         return Collections.unmodifiableList(mBoundAppKeyIndexes);
     }
 
-    protected void setBoundAppKey(final int appKeyIndex, final String appKey) {
+    //change from protected to public
+    public void setBoundAppKey(final int appKeyIndex, final String appKey) {
         if (!mBoundAppKeyIndexes.contains(appKeyIndex))
             mBoundAppKeyIndexes.add(appKeyIndex);
         mBoundAppKeys.put(appKeyIndex, appKey);

@@ -252,9 +252,10 @@ public class ProvisionedMeshNode extends BaseMeshNode {
     public final Map<Integer, String> getAddedAppKeys() {
         return Collections.unmodifiableMap(mAddedAppKeys);
     }
-
+    // change to always select 1st app key
     public final void setAddedAppKey(final int index, final String appKey) {
-        this.mAddedAppKeys.put(index, appKey);
+//        this.mAddedAppKeys.put(index, appKey);
+        this.mAddedAppKeys.put(1, "B5EA4FB1E854DF1B5CAFBD39AA224D96");
     }
     public final void setAddedAppKey() {
         this.mAddedAppKeys.put(1, "B5EA4FB1E854DF1B5CAFBD39AA224D96");

@@ -8,11 +8,14 @@ import com.google.firebase.database.DataSnapshot;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import no.nordicsemi.android.meshprovisioner.configuration.MeshModel;
 import no.nordicsemi.android.meshprovisioner.configuration.ProvisionedMeshNode;
+import no.nordicsemi.android.meshprovisioner.models.SigModel;
+import no.nordicsemi.android.meshprovisioner.models.SigModelParser;
 import no.nordicsemi.android.meshprovisioner.states.UnprovisionedMeshNode;
 import no.nordicsemi.android.meshprovisioner.utils.Element;
 import no.nordicsemi.android.meshprovisioner.utils.MeshParserUtils;
@@ -241,6 +244,7 @@ public class ProvisionedNodeInformation {
             this.unicastAddress = MeshParserUtils.toByteArray(Objects.requireNonNull(item.child("unicastAddress").getValue(String.class)));
             this.bluetoothAddress = item.getKey();
             this.netSequenceNumber = Objects.requireNonNull(item.child("netSequenceNumber").getValue(int.class));
+
         }
     }
     public Map<String, Object> toMap(){
@@ -307,23 +311,24 @@ public class ProvisionedNodeInformation {
 //                            //addAppKey(node,3,"D31793106AF8286FD96B6BA8B69F9392");
 //                            //node.setAddedAppKey(0000, "B5EA4FB1E854DF1B5CAFBD39AA224D96");
 //                            //node.setAddedAppKey(0000, "B7F675E88D8AA1DCF1C2203E5DC6CB1");
-////        final Map<Integer, MeshModel> models = new LinkedHashMap<>();
-////        final int modelId = 2;
-////        models.put(modelId, SigModelParser.getSigModel(modelId));
-////        Element ele1 = new Element(MeshParserUtils.toByteArray("0001"),0,2,0, models);
-////        final Map<Integer, MeshModel> models2 = new LinkedHashMap<>();
-////        final int modelId2 = 4096;
-////        models2.put(modelId2, SigModelParser.getSigModel(modelId2));
-////        Element ele2 = new Element(MeshParserUtils.toByteArray("0002"),0,2,0, models2);
-////        final Map<Integer, MeshModel> models3 = new LinkedHashMap<>();
-////        final int modelId3 = 4096;
-////        models3.put(modelId3, SigModelParser.getSigModel(modelId3));
-////        Element ele3 = new Element(MeshParserUtils.toByteArray("0003"),0,2,0, models3);
-////        final Map<Integer, Element> mElements = new LinkedHashMap<>();
-////        mElements.put(1, ele1);
-////        mElements.put(2, ele2);
-////        mElements.put(3, ele3);
-////        node.setElements(mElements);
+        final Map<Integer, MeshModel> models = new LinkedHashMap<>();
+        final int modelId = 2;
+        models.put(modelId, SigModelParser.getSigModel(modelId));
+        Element ele1 = new Element(MeshParserUtils.toByteArray("0001"),0,2,0, models);
+        final Map<Integer, MeshModel> models2 = new LinkedHashMap<>();
+        final int modelId2 = 4096;
+        models2.put(modelId2, SigModelParser.getSigModel(modelId2));
+        Element ele2 = new Element(MeshParserUtils.toByteArray("0002"),0,2,0, models2);
+        final Map<Integer, MeshModel> models3 = new LinkedHashMap<>();
+        final int modelId3 = 4096;
+        models3.put(modelId3, SigModelParser.getSigModel(modelId3));
+        Element ele3 = new Element(MeshParserUtils.toByteArray("0003"),0,2,0, models3);
+        final Map<Integer, Element> mElements = new LinkedHashMap<>();
+        mElements.put(1, ele1);
+        mElements.put(2, ele2);
+        mElements.put(3, ele3);
+        node.setElements(mElements);
+                            node.setAddedAppKey();
                             node.setNodeIdentifier(NodeIdentifier);
                             //node.setNodeIdentifier("E3D9FFA7E69871B8");
                             node.setReplayFeatureSupport(isRelayFeatureSupported);
