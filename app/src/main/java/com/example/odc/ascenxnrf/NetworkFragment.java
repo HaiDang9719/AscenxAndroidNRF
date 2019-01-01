@@ -156,4 +156,11 @@ public class NetworkFragment extends Fragment implements Injectable,
         getActivity().startActivity(meshConfigurationIntent);
     }
 
+    @Override
+    public void onDeleteClicked(final ProvisionedMeshNode node) {
+        final Intent meshConfigurationIntent = new Intent(getActivity(), NodeDetailsActivity.class);
+        meshConfigurationIntent.putExtra(Utils.EXTRA_DEVICE, node);
+        getActivity().startActivity(meshConfigurationIntent);
+    }
+
 }

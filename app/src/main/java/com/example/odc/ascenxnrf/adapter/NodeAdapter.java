@@ -110,6 +110,7 @@ public class NodeAdapter extends RecyclerView.Adapter<NodeAdapter.ViewHolder>{
     public interface OnItemClickListener {
         void onConfigureClicked(final ProvisionedMeshNode node);
         void onDetailsClicked(final ProvisionedMeshNode node);
+        void onDeleteClicked(final ProvisionedMeshNode node);
     }
 
     final class ViewHolder extends RecyclerView.ViewHolder{
@@ -132,6 +133,8 @@ public class NodeAdapter extends RecyclerView.Adapter<NodeAdapter.ViewHolder>{
         Button configure;
         @BindView(R.id.action_details)
         Button details;
+        @BindView(R.id.action_delete)
+        Button delete;
 
         private ViewHolder(final View provisionedView) {
             super(provisionedView);
@@ -149,6 +152,12 @@ public class NodeAdapter extends RecyclerView.Adapter<NodeAdapter.ViewHolder>{
 
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onDetailsClicked(mNodes.get(getAdapterPosition()));
+                }
+            });
+            provisionedView.findViewById(R.id.action_delete).setOnClickListener(v -> {
+
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onDeleteClicked(mNodes.get(getAdapterPosition()));
                 }
             });
         }

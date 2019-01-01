@@ -231,12 +231,11 @@ public class ProvisionedNodeInformation {
     public ProvisionedNodeInformation(){
 
     }
-    public ProvisionedNodeInformation(DataSnapshot data){
-        for (DataSnapshot item: data.getChildren()) {
+    public ProvisionedNodeInformation(DataSnapshot item){
             this.isConfigured = Objects.requireNonNull(item.child("isConfigured").getValue(Boolean.class));
             this.isProvisioned = Objects.requireNonNull(item.child("isProvisioned").getValue(Boolean.class));
             this.nodeName = Objects.requireNonNull(item.child("nodeName").getValue(String.class));
-            this.identityKey = MeshParserUtils.toByteArray(Objects.requireNonNull(item.child("identityKey").getValue(String.class)));
+            // this.identityKey = MeshParserUtils.toByteArray(Objects.requireNonNull(item.child("identityKey").getValue(String.class)));
             this.deviceKey = MeshParserUtils.toByteArray(Objects.requireNonNull(item.child("deviceKey").getValue(String.class)));
             this.numberOfElements = Objects.requireNonNull(item.child("numberOfElement").getValue(int.class));
             this.NodeIdentifier = Objects.requireNonNull(item.child("NodeIdentifier").getValue(String.class));
@@ -245,14 +244,14 @@ public class ProvisionedNodeInformation {
             this.bluetoothAddress = item.getKey();
             this.netSequenceNumber = Objects.requireNonNull(item.child("netSequenceNumber").getValue(int.class));
 
-        }
+
     }
     public Map<String, Object> toMap(){
         Map<String, Object> nodeConfiguration = new HashMap<>();
         nodeConfiguration.put("isConfigured", isConfigured);
         nodeConfiguration.put("isProvisioned", isProvisioned);
         nodeConfiguration.put("nodeName", nodeName);
-        nodeConfiguration.put("identityKey", Hex.bytesToStringUppercase(identityKey));
+        // nodeConfiguration.put("identityKey", Hex.bytesToStringUppercase(identityKey));
         nodeConfiguration.put("deviceKey", Hex.bytesToStringUppercase(deviceKey));
         nodeConfiguration.put("timeStampInMillis", new SimpleDateFormat("HH:mm:ss").format(timeStampInMillis));
         nodeConfiguration.put("numberOfElement", numberOfElements);
@@ -307,7 +306,7 @@ public class ProvisionedNodeInformation {
                             //startProvisioning(unprovisionedMeshNode);
                             ProvisionedMeshNode node = new ProvisionedMeshNode(unprovisionedMeshNode);
 //                            //addAppKey(node, 3, "1230");
-//                            //node.setNumberOfElements(3);
+                            node.setNumberOfElements(numberOfElements);
 //                            //addAppKey(node,3,"D31793106AF8286FD96B6BA8B69F9392");
 //                            //node.setAddedAppKey(0000, "B5EA4FB1E854DF1B5CAFBD39AA224D96");
 //                            //node.setAddedAppKey(0000, "B7F675E88D8AA1DCF1C2203E5DC6CB1");
@@ -334,6 +333,7 @@ public class ProvisionedNodeInformation {
                             node.setReplayFeatureSupport(isRelayFeatureSupported);
                             //node.setConfigured(true);
                             node.setIsProvisioned(isProvisioned);
+
         return node;
     }
 

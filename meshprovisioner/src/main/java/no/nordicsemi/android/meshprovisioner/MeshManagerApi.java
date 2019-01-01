@@ -149,11 +149,12 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     private static FirebaseAuth auth;
     private static String UserId="";
     private static boolean isFirstTime = true;
-    private static boolean isFirstTimeProvision = false;
+    private static boolean isDeviceExist = false;
     private static DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ArrayList<ProvisionedNodeInformation> arrayMeshNode = new ArrayList<>();
     private static int currentSequenceNumber = 0;
     private static String bluetoothAdress;
+    private static List<String> bluetoothAddList = new ArrayList<>();
 
     public MeshManagerApi(final Context context) {
         this.mContext = context;
@@ -191,32 +192,67 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
 
             intiConfigurationSrc();
             initGson();
+            DatabaseReference refSequenceNumber = mDatabase.child("SequenceNumber");
+            refSequenceNumber.addValueEventListener(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot userID : dataSnapshot.getChildren()) {
+                        Log.d(TAG, "UserId-sequenceNumber: " + userID.getKey());
+                        if (Objects.equals(userID.getKey(), UserId)) {
 
+                            //if(isFirstTime){
+                            currentSequenceNumber = Objects.requireNonNull(userID.child("SequenceNumber").getValue(int.class));
+                            final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            Log.d(TAG, "sequenceNumber : " + currentSequenceNumber );
+                            editor.putInt(KEY, currentSequenceNumber );
+                            editor.apply();
+                            isFirstTime = false;
+                            Log.d(TAG, "stored sequence Number"+preferences.getAll());
+                            //}
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+
+            });
             DatabaseReference refProvisionedNode = mDatabase.child("ProvisionedNodeInformation");
             refProvisionedNode.addValueEventListener(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot item : dataSnapshot.getChildren()) {
-                        Log.d(TAG, "UserId-Provision: " + item.getKey());
-                        if (Objects.equals(item.getKey(), UserId)) {
-                            ProvisionedNodeInformation pInfo = new ProvisionedNodeInformation(item);
-                            arrayMeshNode.add(pInfo);
-                            Log.d(TAG, "is First time : " + isFirstTime);
-                            if(isFirstTime){
-                                currentSequenceNumber = pInfo.getNetSequeceNumber();
-                                final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = preferences.edit();
-                                Log.d(TAG, "sequenceNumber : " + currentSequenceNumber );
-                                editor.putInt(KEY, currentSequenceNumber );
-                                editor.apply();
-                                isFirstTime = false;
+                    for (DataSnapshot userID : dataSnapshot.getChildren()) {
+                        Log.d(TAG, "UserId-Provision: " + userID.getKey());
+                        if (Objects.equals(userID.getKey(), UserId)) {
+                            for (DataSnapshot item : userID.getChildren()){
+                                bluetoothAddList.add(item.getKey());
+                                Log.d(TAG, "bluetooth Address List: "+bluetoothAddList);
+                                isDeviceExist = false;
+                                ProvisionedNodeInformation pInfo = new ProvisionedNodeInformation(item);
+                                arrayMeshNode.add(pInfo);
+                                //Log.d(TAG, "is First time : " + isFirstTime);
+                                //if(isFirstTime){
+//                                    currentSequenceNumber = pInfo.getNetSequeceNumber();
+//                                    final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
+//                                    SharedPreferences.Editor editor = preferences.edit();
+//                                    Log.d(TAG, "sequenceNumber : " + currentSequenceNumber );
+//                                    editor.putInt(KEY, currentSequenceNumber );
+//                                    editor.apply();
+//                                    isFirstTime = false;
+//                                    Log.d(TAG, "stored sequence Number"+preferences.getAll());
+                                //}
+                                ProvisionedMeshNode pNode = pInfo.createProvisionedMeshNode(getConfiguratorSrc(), mProvisioningSettings.getNetworkKey());
+                                onNodeProvisioned(pNode);
+                                Log.v(TAG, "deviceKeyTesting"+MeshParserUtils.bytesToHex(pInfo.getDeviceKey(), true));
+                                //pInfo = null;
+                                //initProvisionedNodes();
                             }
-                            ProvisionedMeshNode pNode = pInfo.createProvisionedMeshNode(getConfiguratorSrc(), mProvisioningSettings.getNetworkKey());
-                            onNodeProvisioned(pNode);
-                            Log.v(TAG, "deviceKeyTesting"+MeshParserUtils.bytesToHex(pInfo.getDeviceKey(), true));
-                            //pInfo = null;
-                            //initProvisionedNodes();
                         }
                     }
                 }
@@ -238,23 +274,79 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
 
     }
 
-    public void increaseSequenceNumber(int currentSN, String bluetoothDeviceAdd){
+//    private void increaseSequenceNumber(int currentSN){
+//        final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = preferences.edit();
+//        int newSN = currentSN + 1;
+//        Log.d(TAG, "old sequenceNumber : " + currentSN);
+//        currentSequenceNumber = newSN;
+//        editor.putInt(KEY, newSN);
+//        editor.apply();
+//        Log.d(TAG, "update sequence number - test new sequence number: "+newSN);
+//        Map<String, Object> sequenceUpdate = new HashMap<>();
+//        sequenceUpdate.put("netSequenceNumber", newSN);
+//        mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(bluetoothAdress).updateChildren(sequenceUpdate);
+//
+    //}
+    private void increaseSequenceNumber(int currentSN){
         final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         int newSN = currentSN + 1;
         Log.d(TAG, "old sequenceNumber : " + currentSN);
         currentSequenceNumber = newSN;
-        editor.putInt(KEY, newSN + 1);
+        editor.putInt(KEY, newSN);
         editor.apply();
         Log.d(TAG, "update sequence number - test new sequence number: "+newSN);
         Map<String, Object> sequenceUpdate = new HashMap<>();
-        sequenceUpdate.put("netSequenceNumber", currentSN+1);
-        mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(bluetoothDeviceAdd).updateChildren(sequenceUpdate);
+        sequenceUpdate.put("SequenceNumber", newSN);
+        mDatabase.child("SequenceNumber").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).updateChildren(sequenceUpdate);
 
+    }
+    public void increaseSequenceNumberInit(int num){
+        final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        int newSN = currentSequenceNumber + num;
+        Log.d(TAG, "old sequenceNumber(init) : " + currentSequenceNumber);
+        currentSequenceNumber = newSN;
+        editor.putInt(KEY, newSN);
+        editor.apply();
+        Log.d(TAG, "update sequence number - test new sequence number(init): "+newSN);
+        Map<String, Object> sequenceUpdate = new HashMap<>();
+        sequenceUpdate.put("SequenceNumber", newSN);
+        mDatabase.child("SequenceNumber").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).updateChildren(sequenceUpdate);
+
+    }
+    private void checkDeviceExist(){
+//        DatabaseReference mDatabase;
+//        mDatabase = FirebaseDatabase.getInstance().getReference();
+//        String deviceAdd = mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(bluetoothAdress).getKey();
+//        Log.d(TAG, "Device Add(Check Device Exist): " + deviceAdd);
+//        if(deviceAdd!=null){
+//            Log.d(TAG, "Device Exist(Check Device Exist): " + bluetoothAdress);
+//            isDeviceExist = true;
+//            return;
+//        }
+//        Log.d(TAG, "Device Not Exist(Check Device Exist): " + bluetoothAdress);
+//        isDeviceExist = false;
+        for (String item: bluetoothAddList) {
+            if(item.equals(bluetoothAdress)){
+                Log.d(TAG, "device existed(setBluetoothAdd): "+bluetoothAdress);
+                isDeviceExist = true;
+                return;
+            }
+        }
+        isDeviceExist = false;
     }
     public void setBluetoothAddress(String address){
         bluetoothAdress = address;
-        Log.d(TAG, "bluetoothAdress: "+bluetoothAdress);
+        Log.d(TAG, "bluetoothAdress(setBluetoothAdd): "+bluetoothAdress);
+        for (String item: bluetoothAddList) {
+            if(item.equals(address)){
+                Log.d(TAG, "device existed(setBluetoothAdd): "+bluetoothAdress);
+                return;
+                }
+            }
+            isDeviceExist = false;
     }
 
     private void intiConfigurationSrc() {
@@ -346,6 +438,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
 
         if (!nodes.isEmpty()) {
             final List<Integer> orderedKeys = reOrderProvisionedNodes(nodes);
+            Log.d(TAG, "node"+orderedKeys);
             mProvisionedNodes.clear();
             for (int orderedKey : orderedKeys) {
                 final String key = String.format(Locale.US, "0x%04X", orderedKey);
@@ -383,6 +476,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
         incrementUnicastAddress(meshNode);
         saveProvisionedNode(meshNode);
         Log.d(TAG, "test Node Identifier: "+meshNode.getNodeIdentifier());
+        Log.d(TAG, "test Node number of Element: "+meshNode.getNumberOfElements());
 
     }
 
@@ -444,11 +538,13 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     private void incrementUnicastAddress(final ProvisionedMeshNode meshNode) {
         //Since we know the number of elements this node contains we can predict the next available address for the next node.
         int unicastAdd = (meshNode.getUnicastAddressInt() + meshNode.getNumberOfElements());
+        Log.d(TAG, "old num of ele : "+meshNode.getNumberOfElements() );
         //We check if the incremented unicast address is already taken by the app/configurator
         final int tempSrc = (mConfigurationSrc[0] & 0xFF) << 8 | (mConfigurationSrc[1] & 0xFF);
         if (unicastAdd == tempSrc) {
             unicastAdd = unicastAdd + 1;
         }
+        Log.d(TAG, "update unicast address: "+unicastAdd );
         mProvisioningSettings.setUnicastAddress(unicastAdd);
 
     }
@@ -559,18 +655,19 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     }
 
     @Override
-    public void updateMeshNode(final ProvisionedMeshNode meshNode) {
+    public synchronized void updateMeshNode(final ProvisionedMeshNode meshNode) {
         if (meshNode != null) {
             final int unicast = AddressUtils.getUnicastAddressInt(meshNode.getUnicastAddress());
             //We update the mesh node in our map of mesh nodes
             mProvisionedNodes.put(unicast, meshNode);
             saveProvisionedNode(meshNode);
             Log.d(TAG,"update provisioned node to database");
-            Log.d(TAG,"is first time provision: "+isFirstTimeProvision);
             DatabaseReference mDatabase;
             mDatabase = FirebaseDatabase.getInstance().getReference();
-            Log.d(TAG, "test"+mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child("EDAS").getKey().equals(bluetoothAdress));
-            if(!mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(bluetoothAdress).getKey().equals(bluetoothAdress)){
+            Log.d(TAG, "Check device address(updateMeshNode): " + bluetoothAdress);
+            checkDeviceExist();
+            if(!isDeviceExist){
+                Log.d(TAG, "Device not Exist(updateMeshNode): " + bluetoothAdress);
                 final SharedPreferences preferences = mContext.getSharedPreferences(PREFS_SEQUENCE_NUMBER, Context.MODE_PRIVATE);
                 ProvisionedNodeInformation pInfo = new ProvisionedNodeInformation(meshNode.isConfigured(), meshNode.getNodeName(), meshNode.getIdentityKey(),
                         meshNode.getDeviceKey(), meshNode.getTimeStamp(), meshNode.getNumberOfElements(),
@@ -579,13 +676,16 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
                         meshNode.getCompanyIdentifier(),
                         meshNode.getVersionIdentifier(),
                         meshNode.isProxyFeatureSupported(), meshNode.isFriendFeatureSupported(), meshNode.isFriendFeatureSupported(),
-                        meshNode.isLowPowerFeatureSupported(), meshNode.getNodeIdentifier(), meshNode.isProvisioned(), meshNode.getSequenceNumber(), meshNode.getUnicastAddress(), preferences.getInt(KEY, 0));
+                        meshNode.isLowPowerFeatureSupported(), meshNode.getNodeIdentifier(), meshNode.isProvisioned(), meshNode.getSequenceNumber(), meshNode.getUnicastAddress(), preferences.getInt(KEY, 0)+10);
                 Map<String, Object> childAdd = pInfo.toMap();
                 mDatabase.child("ProvisionedNodeInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).child(meshNode.getBluetoothDeviceAddress()).setValue(childAdd);
-                isFirstTimeProvision = false;
+                increaseSequenceNumberInit(10);
+                bluetoothAddList.add(bluetoothAdress);
+                isDeviceExist = true;
+            } else {
+                Log.d(TAG, "Device Exist(updateMeshNode): " + bluetoothAdress);
+                increaseSequenceNumber(currentSequenceNumber);
             }
-            increaseSequenceNumber(currentSequenceNumber, bluetoothAdress);
-            ;
 
         }
     }
@@ -742,6 +842,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
      */
     public void identifyNode(@NonNull final String address, final String nodeName) throws IllegalArgumentException {
         //We must save all the provisioning data here so that they could be reused when provisioning the next devices
+        Log.d(TAG, "identifyNode"+mProvisioningSettings.getUnicastAddress());
         mMeshProvisioningHandler.identify(address, nodeName,
                 mProvisioningSettings.getNetworkKey(),
                 mProvisioningSettings.getKeyIndex(),
@@ -894,7 +995,6 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
     public void getCompositionData(final ProvisionedMeshNode meshNode) {
         final int aszmic = 0;
         mMeshMessageHandler.sendCompositionDataGet(meshNode, aszmic);
-        increaseSequenceNumber(currentSequenceNumber, bluetoothAdress);
     }
 
     /**
@@ -982,6 +1082,7 @@ public class MeshManagerApi implements InternalTransportCallbacks, InternalMeshM
         Map<String, Object> networkUpdate = new HashMap<>();
         networkUpdate = nInfo.update();
         mDatabase.child("networkInformation").child(Objects.requireNonNull(auth.getCurrentUser()).getUid()).updateChildren(networkUpdate);
+        bluetoothAddList.clear();
 
 
     }

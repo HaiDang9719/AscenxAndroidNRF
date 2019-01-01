@@ -50,7 +50,7 @@
                 android:src="@drawable/ic_mesh_symbol"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="ContentDescription"/>
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/node_name"
@@ -59,23 +59,23 @@
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:layout_marginStart="@dimen/item_padding_start"
                 android:ellipsize="marquee"
-                android:singleLine="true"
-                android:textSize="20sp"
                 android:paddingTop="@dimen/item_padding_top"
-                app:layout_constraintStart_toEndOf="@id/icon"
+                android:singleLine="true"
+                android:text="@string/nrf_mesh_node"
+                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/nrf_mesh_node"/>
+                app:layout_constraintStart_toEndOf="@id/icon"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/configured_node_info_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/item_padding_bottom"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/icon"
                 app:layout_constraintTop_toBottomOf="@id/node_name"
-                android:visibility="visible"
                 tools:visibility="invisible">
 
                 <TextView
@@ -86,7 +86,7 @@
                     android:text="Address:"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/unicast"
@@ -99,7 +99,7 @@
                     android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/unicast_title"
-                    app:layout_constraintTop_toTopOf="@id/unicast_title"/>
+                    app:layout_constraintTop_toTopOf="@id/unicast_title" />
 
                 <TextView
                     android:id="@+id/company_identifier_title"
@@ -108,7 +108,7 @@
                     android:text="@string/company"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="@+id/unicast_title"
-                    app:layout_constraintTop_toBottomOf="@+id/unicast"/>
+                    app:layout_constraintTop_toBottomOf="@+id/unicast" />
 
                 <TextView
                     android:id="@+id/company_identifier"
@@ -116,12 +116,12 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="@string/nordic_semiconductor_asa"
                     android:paddingEnd="@dimen/item_padding_end"
+                    android:text="@string/nordic_semiconductor_asa"
                     android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/unicast"
-                    app:layout_constraintTop_toBottomOf="@+id/unicast"/>
+                    app:layout_constraintTop_toBottomOf="@+id/unicast" />
 
                 <TextView
                     android:id="@+id/elements_title"
@@ -130,7 +130,7 @@
                     android:text="@string/elements"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="@+id/unicast_title"
-                    app:layout_constraintTop_toBottomOf="@+id/company_identifier"/>
+                    app:layout_constraintTop_toBottomOf="@+id/company_identifier" />
 
                 <TextView
                     android:id="@+id/elements"
@@ -140,7 +140,7 @@
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="@+id/unicast"
                     app:layout_constraintTop_toBottomOf="@+id/company_identifier"
-                    tools:ignore="HardcodedText"/>
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:id="@+id/models_title"
@@ -149,7 +149,7 @@
                     android:text="@string/models"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="@+id/unicast_title"
-                    app:layout_constraintTop_toBottomOf="@+id/elements"/>
+                    app:layout_constraintTop_toBottomOf="@+id/elements" />
 
                 <TextView
                     android:id="@+id/models"
@@ -159,7 +159,7 @@
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="@+id/unicast"
                     app:layout_constraintTop_toBottomOf="@+id/elements"
-                    tools:ignore="HardcodedText"/>
+                    tools:ignore="HardcodedText" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -167,24 +167,24 @@
                 android:id="@+id/not_configured_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:text="@string/provisioned_not_configured"
                 android:layout_marginStart="@dimen/item_padding_start"
                 android:paddingBottom="@dimen/item_padding_bottom"
+                android:text="@string/provisioned_not_configured"
+                android:textSize="14sp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/icon"
                 app:layout_constraintTop_toBottomOf="@id/node_name"
-                android:visibility="gone"
-                tools:visibility="visible"/>
+                tools:visibility="visible" />
+
             <View
                 android:id="@+id/divider"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:background="@drawable/list_divider_holo_light"
-                app:layout_constraintStart_toEndOf="@id/icon"
+                app:layout_constraintBottom_toBottomOf="@id/icon"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/icon">
-            </View>
+                app:layout_constraintStart_toEndOf="@id/icon"></View>
 
             <Button
                 android:id="@+id/action_configure"
@@ -194,16 +194,30 @@
                 android:text="@string/configure"
                 app:layout_constraintBottom_toBottomOf="@+id/action_details"
                 app:layout_constraintEnd_toStartOf="@+id/action_details"
-                app:layout_constraintTop_toTopOf="@+id/action_details"/>
+                app:layout_constraintTop_toTopOf="@+id/action_details"
+                app:layout_constraintVertical_bias="0.0" />
 
             <Button
                 android:id="@+id/action_details"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="88dp"
                 android:text="@string/details"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/icon"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
+                app:layout_constraintTop_toBottomOf="@id/icon" />
+
+            <Button
+                android:id="@+id/action_delete"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/delete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/action_details"
+                app:layout_constraintTop_toBottomOf="@id/icon" />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>

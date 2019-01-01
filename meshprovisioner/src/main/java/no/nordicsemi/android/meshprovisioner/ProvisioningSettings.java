@@ -92,21 +92,21 @@ public class ProvisioningSettings extends NetworkSettings {
 //        }
 //        saveApplicationKeys();
 //    }
-private void addAppKeys() {
-    final SharedPreferences preferences = mContext.getSharedPreferences(APPLICATION_KEYS, Context.MODE_PRIVATE);
-    final Map<String, ?> keys = preferences.getAll();
-    if (!keys.isEmpty()) {
-        appKeys.clear();
-        appKeys.add("B5EA4FB1E854DF1B5CAFBD39AA224D96");
-        appKeys.add("BED2144599172126094631864A171AFC");
-        appKeys.add("3D676A3A14C548A02D32A40278BA7BBC");
-    } else {
-        appKeys.add("B5EA4FB1E854DF1B5CAFBD39AA224D96");
-        appKeys.add("BED2144599172126094631864A171AFC");
-        appKeys.add("3D676A3A14C548A02D32A40278BA7BBC");
+    private void addAppKeys() {
+        final SharedPreferences preferences = mContext.getSharedPreferences(APPLICATION_KEYS, Context.MODE_PRIVATE);
+        final Map<String, ?> keys = preferences.getAll();
+        if (!keys.isEmpty()) {
+            appKeys.clear();
+            appKeys.add("B5EA4FB1E854DF1B5CAFBD39AA224D96");
+            appKeys.add("BED2144599172126094631864A171AFC");
+            appKeys.add("3D676A3A14C548A02D32A40278BA7BBC");
+        } else {
+            appKeys.add("B5EA4FB1E854DF1B5CAFBD39AA224D96");
+            appKeys.add("BED2144599172126094631864A171AFC");
+            appKeys.add("3D676A3A14C548A02D32A40278BA7BBC");
+        }
+        saveApplicationKeys();
     }
-    saveApplicationKeys();
-}
 
     public String getNetworkKey() {
         return networkKey;

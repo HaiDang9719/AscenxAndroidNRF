@@ -213,6 +213,7 @@
     <string name="title_error_provisioning_failed">Provisioning Failed</string>
     <string name="provisioning_cancelled">Provisioning canceled!</string>
     <string name="details">Details</string>
+    <string name="delete">Delete</string>
     <string name="node_status">Node status:</string>
     <string name="provisioned_not_configured">Provisioned, not configured.</string>
     <string name="configuration_state">Configuration status:</string>
