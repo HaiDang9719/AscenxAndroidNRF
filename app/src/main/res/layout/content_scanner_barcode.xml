@@ -13,7 +13,7 @@
         android:id="@+id/zxing_barcode_scanner"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:zxing_scanner_layout="@layout/custom_scannerBarcode" />
+        app:zxing_scanner_layout="@layout/custom_scanner_barcode" />
 
     <!--  FlashLight Button-->
     <Button
@@ -22,7 +22,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/turn_off_flashlight" />
+        android:text="flash" />
+
+    <!--android:text="@string/turn_off_flashlight" />-->
 
 
 </RelativeLayout>

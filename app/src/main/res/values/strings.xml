@@ -417,4 +417,11 @@
     <string name="prompt_signup">No account yet? Create one</string>
     <string name="minimum_password">Your password must be longer than 6</string>
     <string name="auth_failed">Login error</string>
+
+    <!-- Strings related to scanner -->
+    <string name="turn_off_flashlight">FlashLight on</string>
+    <string name="turn_on_flashlight">flashLight off</string>
+    <string name="title_activity_main">QR and Barcode Scanner</string>
+    <string name="message">Place a barcode inside the viewfinder rectangle to scan it.</string>
+    <string name="action_scan_barcode">Scan</string>
 </resources>

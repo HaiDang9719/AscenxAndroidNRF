@@ -20,7 +20,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_scannerBarcode" />
+    <include layout="@layout/content_scanner_barcode" />
 
 
 
