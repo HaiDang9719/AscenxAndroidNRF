@@ -26,7 +26,8 @@ android {
     }
 
     dexOptions {
-        preDexLibraries = false}
+        preDexLibraries = false
+    }
 }
 
 dependencies {

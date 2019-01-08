@@ -34,11 +34,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -47,7 +44,7 @@ import butterknife.ButterKnife;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import no.nordicsemi.android.meshprovisioner.configuration.ProvisionedMeshNode;
+
 import com.example.odc.ascenxnrf.di.Injectable;
 import com.example.odc.ascenxnrf.dialog.DialogFragmentResetNetwork;
 import com.example.odc.ascenxnrf.utils.Utils;
@@ -55,6 +52,7 @@ import com.example.odc.ascenxnrf.viewmodels.SharedViewModel;
 
 public class MainActivity extends AppCompatActivity implements Injectable, HasSupportFragmentInjector,  BottomNavigationView.OnNavigationItemSelectedListener,
         BottomNavigationView.OnNavigationItemReselectedListener,
+        UserFragment.UserFragmentListener,
         ScannerFragment.ScannerFragmentListener, FragmentManager.OnBackStackChangedListener,
         NetworkFragment.NetworkFragmentListener {
 
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements Injectable, HasSu
 
     private NetworkFragment mNetworkFragment;
     private ScannerFragment mScannerFragment;
-    private UserFragment mUserFragement;
+    private UserFragment mUserFragment;
     private Fragment mSettingsFragment;
 
     @Override
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements Injectable, HasSu
 
         mNetworkFragment = (NetworkFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_network);
         mScannerFragment = (ScannerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_scanner);
-        mUserFragement = (UserFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_user);
+        mUserFragment = (UserFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_user);
         mSettingsFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_settings);
         mBottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
@@ -134,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements Injectable, HasSu
             return false;
         }
         return true;
-    }*/
+    }
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
@@ -155,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements Injectable, HasSu
                 return true;
         }
         return false;
-    }
+    }*/
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -176,13 +174,16 @@ public class MainActivity extends AppCompatActivity implements Injectable, HasSu
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         switch (id) {
             case R.id.action_network:
-                ft.show(mNetworkFragment).hide(mScannerFragment).hide(mSettingsFragment);
+                ft.show(mNetworkFragment).hide(mScannerFragment).hide(mSettingsFragment).hide(mUserFragment);
                 break;
             case R.id.action_scanner:
-                ft.hide(mNetworkFragment).show(mScannerFragment).hide(mSettingsFragment);
+                ft.hide(mNetworkFragment).show(mScannerFragment).hide(mSettingsFragment).hide(mUserFragment);
+                break;
+            case R.id.action_user:
+                ft.hide(mNetworkFragment).show(mUserFragment).hide(mSettingsFragment).hide(mScannerFragment);
                 break;
             case R.id.action_settings:
-                ft.hide(mNetworkFragment).hide(mScannerFragment).show(mSettingsFragment);
+                ft.hide(mNetworkFragment).hide(mScannerFragment).show(mSettingsFragment).hide(mUserFragment);
                 break;
         }
         ft.commit();
