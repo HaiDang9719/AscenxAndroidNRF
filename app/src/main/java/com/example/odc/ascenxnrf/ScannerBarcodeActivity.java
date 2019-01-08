@@ -22,7 +22,7 @@ public class ScannerBarcodeActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scanner);
+        setContentView(R.layout.activity_scanner_barcode);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -78,12 +78,12 @@ public class ScannerBarcodeActivity extends AppCompatActivity implements
 
     @Override
     public void onTorchOn() {
-        // switchFlashlightButton.setText(R.string.turn_off_flashlight);
+        switchFlashlightButton.setText(R.string.turn_off_flashlight);
     }
 
     @Override
     public void onTorchOff() {
-        // switchFlashlightButton.setText(R.string.turn_on_flashlight);
+        switchFlashlightButton.setText(R.string.turn_on_flashlight);
     }
 
     @Override

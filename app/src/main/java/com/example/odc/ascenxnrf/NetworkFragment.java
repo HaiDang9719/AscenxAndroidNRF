@@ -130,6 +130,11 @@ public class NetworkFragment extends Fragment implements Injectable,
                 scannerActivity.putExtra(ProvisionedNodesScannerActivity.NETWORK_ID, mViewModel.getNetworkId());
                 startActivity(scannerActivity);
                 return true;
+            case R.id.action_scan_barcode:
+                final Intent scannerBarcodeActivity = new Intent(getContext(), ScannerBarcodeActivity.class);
+                // scannerBarcodeActivity.putExtra(ProvisionedNodesScannerActivity.NETWORK_ID, mViewModel.getNetworkId());
+                startActivity(scannerBarcodeActivity);
+                return true;
             case R.id.action_disconnect:
                 mViewModel.disconnect();
                 return true;

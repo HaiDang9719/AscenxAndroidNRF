@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements Injectable, HasSu
             return false;
         }
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements Injectable, HasSu
                 return true;
         }
         return false;
-    }*/
+    }
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
