@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements Injectable, HasSu
 
     private NetworkFragment mNetworkFragment;
     private ScannerFragment mScannerFragment;
+    private UserFragment mUserFragement;
     private Fragment mSettingsFragment;
 
     @Override
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements Injectable, HasSu
 
         mNetworkFragment = (NetworkFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_network);
         mScannerFragment = (ScannerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_scanner);
+        mUserFragement = (UserFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_user);
         mSettingsFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_settings);
         mBottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
