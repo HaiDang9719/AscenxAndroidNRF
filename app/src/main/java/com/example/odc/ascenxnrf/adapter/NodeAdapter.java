@@ -22,6 +22,7 @@
 
 package com.example.odc.ascenxnrf.adapter;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,6 +42,8 @@ import no.nordicsemi.android.meshprovisioner.utils.CompanyIdentifiers;
 import no.nordicsemi.android.meshprovisioner.utils.Element;
 import no.nordicsemi.android.meshprovisioner.utils.MeshParserUtils;
 import com.example.odc.ascenxnrf.R;
+import com.example.odc.ascenxnrf.RanghoodActivity;
+import com.example.odc.ascenxnrf.UserActivity;
 import com.example.odc.ascenxnrf.livedata.ProvisionedNodesLiveData;
 
 public class NodeAdapter extends RecyclerView.Adapter<NodeAdapter.ViewHolder>{
@@ -158,6 +161,12 @@ public class NodeAdapter extends RecyclerView.Adapter<NodeAdapter.ViewHolder>{
 
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onDeleteClicked(mNodes.get(getAdapterPosition()));
+                }
+            });
+            provisionedView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    provisionedView.getContext().startActivity(new Intent(provisionedView.getContext(), RanghoodActivity.class));
                 }
             });
         }

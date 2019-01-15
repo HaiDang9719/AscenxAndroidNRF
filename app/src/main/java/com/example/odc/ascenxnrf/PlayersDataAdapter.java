@@ -1,5 +1,6 @@
 package com.example.odc.ascenxnrf;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,12 @@ class PlayersDataAdapter extends RecyclerView.Adapter<PlayersDataAdapter.PlayerV
             club = (TextView) view.findViewById(R.id.club);
             rating = (TextView) view.findViewById(R.id.rating);
             age = (TextView) view.findViewById(R.id.age);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    view.getContext().startActivity(new Intent(view.getContext(), UserActivity.class));
+                }
+            });
         }
     }
 

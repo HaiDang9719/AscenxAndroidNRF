@@ -58,13 +58,13 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login" >
+            android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             </intent-filter>
-    </activity>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:icon="@drawable/ic_blinky_feature"
@@ -84,60 +84,40 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".ManageAppKeysActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".MeshProvisionerActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".NodeConfigurationActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".ModelConfigurationActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".PublicationSettingsActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".NodeDetailsActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".ManageNodeAppKeysActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".BindAppKeysActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".ScannerBarcodeActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".UserActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop"></activity>
 
         <service
             android:name=".service.MeshService"
             android:exported="false" />
 
-
+        <activity android:name=".RanghoodActivity"></activity>
     </application>
 
 </manifest>

@@ -110,32 +110,6 @@ public class UserFragment extends Fragment {
         mAdapter = new PlayersDataAdapter(players);
     }
 
-//    private void setupRecyclerView() {
-//        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
-//
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-//        recyclerView.setAdapter(mAdapter);
-//
-//        swipeController = new SwipeController(new SwipeControllerActions() {
-//            @Override
-//            public void onRightClicked(int position) {
-//                mAdapter.players.remove(position);
-//                mAdapter.notifyItemRemoved(position);
-//                mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
-//            }
-//        });
-//
-//        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
-//        itemTouchhelper.attachToRecyclerView(recyclerView);
-//
-//        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-//            @Override
-//            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-//                swipeController.onDraw(c);
-//            }
-//        });
-//    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -165,7 +139,6 @@ public class UserFragment extends Fragment {
                 swipeController.onDraw(c);
             }
         });
-        //return inflater.inflate(R.layout.fragment_user, container, false);
         return rootView;
     }
 
